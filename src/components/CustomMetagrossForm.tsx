@@ -1,6 +1,6 @@
 import { DEFAULT_EVS, DEFAULT_IVS, METAGROSS_ITEMS, NATURE_LIST } from '@/constants'
 import type { EVs, IVs, Metagross, MetagrossItem, Nature } from '@/types'
-import { calculateStats, calculateTotalEVs, isValidEVs } from '@/utils'
+import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv } from '@/utils'
 import { useState } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
@@ -94,11 +94,17 @@ export const CustomMetagrossForm = ({
               </Select>
             </div>
 
-            {/* 個体値設定 */}
+            {/* ステータス設定 */}
             <div className="space-y-4">
-              <Label>個体値</Label>
-              <div className="grid grid-cols-3 gap-4">
-                {Object.entries(ivs).map(([stat, value]) => {
+              <div className="flex justify-between items-center">
+                <Label>ステータス設定</Label>
+                <span className={`text-sm ${remainingEvs < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                  努力値残り: {remainingEvs} / 510
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {(['hp', 'attack', 'defense', 'spAttack', 'spDefense', 'speed'] as const).map((stat) => {
                   const statLabels = {
                     hp: 'HP',
                     attack: 'こうげき',
@@ -107,107 +113,116 @@ export const CustomMetagrossForm = ({
                     spDefense: 'とくぼう',
                     speed: 'すばやさ',
                   }
+                  const optimalEv = getOptimalEv('メタグロス', 50, nature, ivs, evs, stat)
+                  const hasWaste = optimalEv !== null
+                  const wasteAmount = hasWaste ? evs[stat] - optimalEv : 0
+
                   return (
-                    <div key={stat} className="space-y-1">
-                      <Label className="text-xs">{statLabels[stat as keyof IVs]}</Label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          value={value}
-                          onChange={(e) => {
-                            const newValue = Math.max(0, Math.min(31, Number.parseInt(e.target.value) || 0))
-                            setIvs({ ...ivs, [stat]: newValue })
-                          }}
-                          className="w-16 px-2 py-1 text-sm border rounded"
-                          min={0}
-                          max={31}
-                        />
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setIvs({ ...ivs, [stat]: 31 })}
-                          className="h-7 px-2"
-                        >
-                          V
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setIvs({ ...ivs, [stat]: 0 })}
-                          className="h-7 px-2"
-                        >
-                          U
-                        </Button>
+                    <div key={stat} className="border rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-base font-semibold">{statLabels[stat]}</Label>
+                        <div className="text-2xl font-bold">{stats[stat]}</div>
                       </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* 個体値 */}
+                        <div className="space-y-2">
+                          <Label className="text-xs text-muted-foreground">個体値</Label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              value={ivs[stat]}
+                              onChange={(e) => {
+                                const newValue = Math.max(0, Math.min(31, Number.parseInt(e.target.value) || 0))
+                                setIvs({ ...ivs, [stat]: newValue })
+                              }}
+                              className="w-16 px-2 py-1 text-sm border rounded"
+                              min={0}
+                              max={31}
+                            />
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setIvs({ ...ivs, [stat]: 31 })}
+                              className="h-7 px-2"
+                            >
+                              V
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setIvs({ ...ivs, [stat]: 0 })}
+                              className="h-7 px-2"
+                            >
+                              U
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* 努力値 */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-xs text-muted-foreground">努力値</Label>
+                            {hasWaste && (
+                              <span className="text-xs text-orange-500">
+                                無駄: {wasteAmount}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              value={evs[stat]}
+                              onChange={(e) => {
+                                const newValue = Math.max(0, Math.min(252, Number.parseInt(e.target.value) || 0))
+                                updateEv(stat, newValue)
+                              }}
+                              className={`w-16 px-2 py-1 text-sm border rounded ${hasWaste ? 'border-orange-500 bg-orange-50' : ''}`}
+                              min={0}
+                              max={252}
+                              step={4}
+                            />
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => updateEv(stat, 252)}
+                              className="h-7 px-2"
+                            >
+                              252
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => updateEv(stat, 0)}
+                              className="h-7 px-2"
+                            >
+                              0
+                            </Button>
+                            {hasWaste && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => updateEv(stat, optimalEv)}
+                                className="h-7 px-2 text-orange-600 border-orange-600"
+                                title={`最適値: ${optimalEv}`}
+                              >
+                                最適
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <Slider
+                        value={[evs[stat]]}
+                        onValueChange={(values) => updateEv(stat, values[0])}
+                        max={252}
+                        step={4}
+                        className={`w-full ${hasWaste ? '[&_[role=slider]]:bg-orange-500' : ''}`}
+                      />
                     </div>
                   )
                 })}
-              </div>
-            </div>
-
-            {/* 努力値設定 */}
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <Label>努力値配分</Label>
-                <span className={`text-sm ${remainingEvs < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
-                  残り: {remainingEvs} / 510
-                </span>
-              </div>
-
-              {Object.entries(evs).map(([stat, value]) => {
-                const statLabels = {
-                  hp: 'HP',
-                  attack: 'こうげき',
-                  defense: 'ぼうぎょ',
-                  spAttack: 'とくこう',
-                  spDefense: 'とくぼう',
-                  speed: 'すばやさ',
-                }
-                return (
-                  <div key={stat} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <Label>{statLabels[stat as keyof EVs]}</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm w-12 text-right">{value}</span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateEv(stat as keyof EVs, 252)}
-                          disabled={maxEvForStat(stat as keyof EVs) < 252}
-                        >
-                          252
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateEv(stat as keyof EVs, 0)}
-                        >
-                          0
-                        </Button>
-                      </div>
-                    </div>
-                    <Slider
-                      value={[value]}
-                      onValueChange={(values) => updateEv(stat as keyof EVs, values[0])}
-                      max={maxEvForStat(stat as keyof EVs)}
-                      step={4}
-                      className="w-full"
-                    />
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* 実数値表示 */}
-            <div className="space-y-2 p-4 bg-muted rounded-lg">
-              <Label className="text-sm">実数値</Label>
-              <div className="grid grid-cols-3 gap-2 text-sm">
-                <div>HP: {stats.hp}</div>
-                <div>こうげき: {stats.attack}</div>
-                <div>ぼうぎょ: {stats.defense}</div>
-                <div>とくこう: {stats.spAttack}</div>
-                <div>とくぼう: {stats.spDefense}</div>
-                <div>すばやさ: {stats.speed}</div>
               </div>
             </div>
 

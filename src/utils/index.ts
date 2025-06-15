@@ -20,3 +20,6 @@ export {
   getWinRateColorClass,
   getItemDescription,
 } from './simulation'
+
+// 努力値最適化関連
+export { getOptimalEv, checkAllEvWaste, getTotalEvWaste } from './evOptimization'
