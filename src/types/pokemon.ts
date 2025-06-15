@@ -62,6 +62,7 @@ export type ThunderItem =
   | "オボンのみ"
   | "じしゃく"
   | "ひかりのこな"
+  | "せんせいのツメ"
   | "もちものなし";
 
 export type MetagrossItem =

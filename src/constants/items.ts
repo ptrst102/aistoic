@@ -48,6 +48,7 @@ export const THUNDER_ITEMS = [
   "オボンのみ",
   "じしゃく",
   "ひかりのこな",
+  "せんせいのツメ",
   "もちものなし",
 ] as const;
 
