@@ -35,13 +35,11 @@ export const CustomMetagrossForm = ({
 
   const updateEv = (stat: keyof EVs, value: number) => {
     const newEvs = { ...evs, [stat]: value }
-    if (isValidEVs(newEvs)) {
-      setEvs(newEvs)
-    }
+    setEvs(newEvs)
   }
 
   const maxEvForStat = (stat: keyof EVs) => {
-    return Math.min(252, evs[stat] + remainingEvs)
+    return 252
   }
 
   const handleSubmit = () => {
@@ -96,11 +94,62 @@ export const CustomMetagrossForm = ({
               </Select>
             </div>
 
+            {/* 個体値設定 */}
+            <div className="space-y-4">
+              <Label>個体値</Label>
+              <div className="grid grid-cols-3 gap-4">
+                {Object.entries(ivs).map(([stat, value]) => {
+                  const statLabels = {
+                    hp: 'HP',
+                    attack: 'こうげき',
+                    defense: 'ぼうぎょ',
+                    spAttack: 'とくこう',
+                    spDefense: 'とくぼう',
+                    speed: 'すばやさ',
+                  }
+                  return (
+                    <div key={stat} className="space-y-1">
+                      <Label className="text-xs">{statLabels[stat as keyof IVs]}</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          value={value}
+                          onChange={(e) => {
+                            const newValue = Math.max(0, Math.min(31, Number.parseInt(e.target.value) || 0))
+                            setIvs({ ...ivs, [stat]: newValue })
+                          }}
+                          className="w-16 px-2 py-1 text-sm border rounded"
+                          min={0}
+                          max={31}
+                        />
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setIvs({ ...ivs, [stat]: 31 })}
+                          className="h-7 px-2"
+                        >
+                          V
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setIvs({ ...ivs, [stat]: 0 })}
+                          className="h-7 px-2"
+                        >
+                          U
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
             {/* 努力値設定 */}
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <Label>努力値配分</Label>
-                <span className="text-sm text-muted-foreground">
+                <span className={`text-sm ${remainingEvs < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
                   残り: {remainingEvs} / 510
                 </span>
               </div>
