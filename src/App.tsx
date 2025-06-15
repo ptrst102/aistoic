@@ -1,4 +1,4 @@
-import { CustomMetagrossForm, ThunderForm, WinRateTable } from '@/components'
+import { CustomMetagrossForm, ThunderForm, WinRateTable, HelpSection } from '@/components'
 import { Button } from '@/components/ui/button'
 import type { Metagross, MetagrossItem, MetagrossPreset, Thunder } from '@/types'
 import { calculateWinRateAgainstCustom, calculateWinRatesAgainstAllPresets } from '@/utils'
@@ -78,6 +78,9 @@ const App = () => {
             isCalculating={isCalculating}
           />
         </div>
+
+        {/* ヘルプセクション */}
+        <HelpSection />
       </main>
 
       <footer className="border-t bg-white mt-16">
