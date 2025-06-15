@@ -1,6 +1,6 @@
 import { DEFAULT_EVS, DEFAULT_IVS, METAGROSS_ITEMS, NATURE_LIST } from '@/constants'
 import type { EVs, IVs, Metagross, MetagrossItem, Nature } from '@/types'
-import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv } from '@/utils'
+import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
 import { useState } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
@@ -121,14 +121,33 @@ export const CustomMetagrossForm = ({
                     <div key={stat} className="border rounded-lg p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <Label className="text-base font-semibold">{statLabels[stat]}</Label>
-                        <div className="text-2xl font-bold">{stats[stat]}</div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            value={stats[stat]}
+                            onChange={(e) => {
+                              const targetValue = Number.parseInt(e.target.value) || 0
+                              const newEv = calculateEvFromStat('メタグロス', 50, nature, ivs[stat], stat, targetValue)
+                              if (newEv !== null) {
+                                updateEv(stat, newEv)
+                              }
+                            }}
+                            className="w-20 px-2 py-1 text-2xl font-bold text-center border rounded"
+                            min={getStatRange('メタグロス', 50, nature, ivs[stat], stat).min}
+                            max={getStatRange('メタグロス', 50, nature, ivs[stat], stat).max}
+                          />
+                          <div className="text-xs text-muted-foreground">
+                            ({getStatRange('メタグロス', 50, nature, ivs[stat], stat).min}-
+                            {getStatRange('メタグロス', 50, nature, ivs[stat], stat).max})
+                          </div>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         {/* 個体値 */}
                         <div className="space-y-2">
                           <Label className="text-xs text-muted-foreground">個体値</Label>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
                             <input
                               type="number"
                               value={ivs[stat]}
@@ -136,7 +155,7 @@ export const CustomMetagrossForm = ({
                                 const newValue = Math.max(0, Math.min(31, Number.parseInt(e.target.value) || 0))
                                 setIvs({ ...ivs, [stat]: newValue })
                               }}
-                              className="w-16 px-2 py-1 text-sm border rounded"
+                              className="w-14 px-2 py-1 text-sm border rounded"
                               min={0}
                               max={31}
                             />
@@ -144,7 +163,7 @@ export const CustomMetagrossForm = ({
                               size="sm"
                               variant="outline"
                               onClick={() => setIvs({ ...ivs, [stat]: 31 })}
-                              className="h-7 px-2"
+                              className="h-7 px-2 text-xs"
                             >
                               V
                             </Button>
@@ -152,7 +171,7 @@ export const CustomMetagrossForm = ({
                               size="sm"
                               variant="outline"
                               onClick={() => setIvs({ ...ivs, [stat]: 0 })}
-                              className="h-7 px-2"
+                              className="h-7 px-2 text-xs"
                             >
                               U
                             </Button>
@@ -164,12 +183,12 @@ export const CustomMetagrossForm = ({
                           <div className="flex items-center justify-between">
                             <Label className="text-xs text-muted-foreground">努力値</Label>
                             {hasWaste && (
-                              <span className="text-xs text-orange-500">
+                              <span className="text-xs text-orange-500 cursor-help" title={`最適値: ${optimalEv}`}>
                                 無駄: {wasteAmount}
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
                             <input
                               type="number"
                               value={evs[stat]}
@@ -177,7 +196,7 @@ export const CustomMetagrossForm = ({
                                 const newValue = Math.max(0, Math.min(252, Number.parseInt(e.target.value) || 0))
                                 updateEv(stat, newValue)
                               }}
-                              className={`w-16 px-2 py-1 text-sm border rounded ${hasWaste ? 'border-orange-500 bg-orange-50' : ''}`}
+                              className={`w-14 px-2 py-1 text-sm border rounded ${hasWaste ? 'border-orange-500 bg-orange-50' : ''}`}
                               min={0}
                               max={252}
                               step={4}
@@ -186,7 +205,7 @@ export const CustomMetagrossForm = ({
                               size="sm"
                               variant="outline"
                               onClick={() => updateEv(stat, 252)}
-                              className="h-7 px-2"
+                              className="h-7 px-2 text-xs"
                             >
                               252
                             </Button>
@@ -194,21 +213,10 @@ export const CustomMetagrossForm = ({
                               size="sm"
                               variant="outline"
                               onClick={() => updateEv(stat, 0)}
-                              className="h-7 px-2"
+                              className="h-7 px-2 text-xs"
                             >
                               0
                             </Button>
-                            {hasWaste && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateEv(stat, optimalEv)}
-                                className="h-7 px-2 text-orange-600 border-orange-600"
-                                title={`最適値: ${optimalEv}`}
-                              >
-                                最適
-                              </Button>
-                            )}
                           </div>
                         </div>
                       </div>
