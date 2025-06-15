@@ -7,13 +7,13 @@ const App = () => {
   const [thunder, setThunder] = useState<Thunder | null>(null)
   const [winRates, setWinRates] = useState<Record<MetagrossPreset, Record<MetagrossItem, number>> | null>(null)
   const [customMetagross, setCustomMetagross] = useState<Metagross | null>(null)
-  const [customWinRate, setCustomWinRate] = useState<number | null>(null)
+  const [customWinRates, setCustomWinRates] = useState<Record<MetagrossItem, number> | null>(null)
   const [isCalculating, setIsCalculating] = useState(false)
 
   const handleThunderSubmit = async (newThunder: Thunder) => {
     setThunder(newThunder)
     setIsCalculating(true)
-    setCustomWinRate(null)
+    setCustomWinRates(null)
 
     // 非同期で計算を実行
     setTimeout(() => {
@@ -22,8 +22,8 @@ const App = () => {
       
       // カスタムメタグロスが設定されている場合はその勝率も計算
       if (customMetagross) {
-        const customRate = calculateWinRateAgainstCustom(newThunder, customMetagross)
-        setCustomWinRate(customRate)
+        const customRates = calculateWinRateAgainstCustom(newThunder, customMetagross)
+        setCustomWinRates(customRates)
       }
       
       setIsCalculating(false)
@@ -37,8 +37,8 @@ const App = () => {
     if (thunder) {
       setIsCalculating(true)
       setTimeout(() => {
-        const winRate = calculateWinRateAgainstCustom(thunder, metagross)
-        setCustomWinRate(winRate)
+        const winRates = calculateWinRateAgainstCustom(thunder, metagross)
+        setCustomWinRates(winRates)
         setIsCalculating(false)
       }, 100)
     }
@@ -69,7 +69,7 @@ const App = () => {
           <div>
             <WinRateTable 
               winRates={winRates} 
-              customWinRate={customWinRate}
+              customWinRates={customWinRates}
               isCalculating={isCalculating}
             />
           </div>

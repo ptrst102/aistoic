@@ -77,16 +77,28 @@ export const calculateWinRatesAgainstAllPresets = (
 }
 
 /**
- * カスタムメタグロスに対する勝率を計算する
+ * カスタムメタグロスに対する勝率を計算する（各持ち物ごと）
  * @param thunder サンダーのデータ
- * @param customMetagross カスタムメタグロスのデータ
- * @returns 勝率
+ * @param customMetagross カスタムメタグロスのデータ（持ち物なし）
+ * @returns 持ち物ごとの勝率
  */
 export const calculateWinRateAgainstCustom = (
   thunder: Thunder,
-  customMetagross: Metagross,
-): number => {
-  return calculateWinRate(thunder, customMetagross, 10000)
+  customMetagross: Omit<Metagross, 'item'>,
+): Record<MetagrossItem, number> => {
+  const results = {} as Record<MetagrossItem, number>
+
+  // 各持ち物に対して計算
+  for (const item of METAGROSS_ITEMS) {
+    const metagrossWithItem: Metagross = {
+      ...customMetagross,
+      item,
+    } as Metagross
+    
+    results[item] = calculateWinRate(thunder, metagrossWithItem, 10000)
+  }
+
+  return results
 }
 
 /**

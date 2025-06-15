@@ -13,6 +13,14 @@ interface BattleState {
     sleepTurns: number
     hasUsedLumBerry: boolean
     hasUsedSitrusBerry: boolean
+    hasUsedPinchBerry: boolean
+    statBoosts: {
+      attack: number
+      defense: number
+      spAttack: number
+      spDefense: number
+      speed: number
+    }
   }
   metagross: {
     currentHP: number
@@ -21,6 +29,14 @@ interface BattleState {
     sleepTurns: number
     hasUsedLumBerry: boolean
     hasUsedSitrusBerry: boolean
+    hasUsedPinchBerry: boolean
+    statBoosts: {
+      attack: number
+      defense: number
+      spAttack: number
+      spDefense: number
+      speed: number
+    }
   }
 }
 
@@ -89,7 +105,7 @@ const determineTurnOrder = (
     return 'metagross'
   }
 
-  // 素早さによる判定（麻痺の影響を考慮）
+  // 素早さによる判定（麻痺とカムラのみの影響を考慮）
   let thunderSpeed = thunder.stats.speed
   let metagrossSpeed = metagross.stats.speed
 
@@ -98,6 +114,14 @@ const determineTurnOrder = (
   }
   if (battleState.metagross.status === 'paralysis') {
     metagrossSpeed = Math.floor(metagrossSpeed / 4)
+  }
+
+  // カムラのみの効果を適用
+  if (battleState.thunder.statBoosts.speed > 0) {
+    thunderSpeed = Math.floor(thunderSpeed * 1.5)
+  }
+  if (battleState.metagross.statBoosts.speed > 0) {
+    metagrossSpeed = Math.floor(metagrossSpeed * 1.5)
   }
 
   return thunderSpeed >= metagrossSpeed ? 'thunder' : 'metagross'
@@ -145,6 +169,31 @@ const applyLeftovers = (currentHP: number, maxHP: number): number => {
 }
 
 /**
+ * ピンチきのみの発動処理
+ */
+const checkPinchBerry = (
+  currentHP: number,
+  maxHP: number,
+  item: string,
+  hasUsed: boolean,
+): { shouldActivate: boolean; stat: string | null } => {
+  if (hasUsed || currentHP > maxHP / 4) {
+    return { shouldActivate: false, stat: null }
+  }
+
+  switch (item) {
+    case 'ヤタピのみ':
+      return { shouldActivate: true, stat: 'spAttack' }
+    case 'チイラのみ':
+      return { shouldActivate: true, stat: 'attack' }
+    case 'カムラのみ':
+      return { shouldActivate: true, stat: 'speed' }
+    default:
+      return { shouldActivate: false, stat: null }
+  }
+}
+
+/**
  * サンダーのターン処理
  */
 const executeThunderTurn = (
@@ -183,11 +232,24 @@ const executeThunderTurn = (
     return { damage: 0, causedParalysis: false }
   }
 
-  // ダメージ計算
+  // ダメージ計算（ヤタピのみの効果を考慮）
   const isCritical = isCriticalHit()
   const randomValue = generateRandomValue()
+  
+  // ヤタピのみの効果を適用したサンダーを作成
+  let modifiedThunder = thunder
+  if (state.thunder.statBoosts.spAttack > 0) {
+    modifiedThunder = {
+      ...thunder,
+      stats: {
+        ...thunder.stats,
+        spAttack: Math.floor(thunder.stats.spAttack * 1.5)
+      }
+    }
+  }
+  
   const damage = calculateDamage(
-    thunder,
+    modifiedThunder,
     metagross,
     moveData.power,
     'special',
@@ -238,11 +300,24 @@ const executeMetagrossTurn = (
     return { damage: 0, causedFlinch: false }
   }
 
-  // ダメージ計算
+  // ダメージ計算（チイラのみの効果を考慮）
   const isCritical = isCriticalHit()
   const randomValue = generateRandomValue()
+  
+  // チイラのみの効果を適用したメタグロスを作成
+  let modifiedMetagross = metagross
+  if (state.metagross.statBoosts.attack > 0) {
+    modifiedMetagross = {
+      ...metagross,
+      stats: {
+        ...metagross.stats,
+        attack: Math.floor(metagross.stats.attack * 1.5)
+      }
+    }
+  }
+  
   const damage = calculateDamage(
-    metagross,
+    modifiedMetagross,
     thunder,
     moveData.power,
     'physical',
@@ -275,6 +350,14 @@ export const simulateBattle = (thunder: Thunder, metagross: Metagross): boolean 
       sleepTurns: 0,
       hasUsedLumBerry: false,
       hasUsedSitrusBerry: false,
+      hasUsedPinchBerry: false,
+      statBoosts: {
+        attack: 0,
+        defense: 0,
+        spAttack: 0,
+        spDefense: 0,
+        speed: 0,
+      },
     },
     metagross: {
       currentHP: metagross.stats.hp,
@@ -283,6 +366,14 @@ export const simulateBattle = (thunder: Thunder, metagross: Metagross): boolean 
       sleepTurns: 0,
       hasUsedLumBerry: false,
       hasUsedSitrusBerry: false,
+      hasUsedPinchBerry: false,
+      statBoosts: {
+        attack: 0,
+        defense: 0,
+        spAttack: 0,
+        spDefense: 0,
+        speed: 0,
+      },
     },
   }
 
@@ -291,14 +382,6 @@ export const simulateBattle = (thunder: Thunder, metagross: Metagross): boolean 
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     // ターン開始時の処理
-
-    // たべのこしの回復
-    if (thunder.item === 'たべのこし') {
-      state.thunder.currentHP = applyLeftovers(state.thunder.currentHP, state.thunder.maxHP)
-    }
-    if (metagross.item === 'たべのこし') {
-      state.metagross.currentHP = applyLeftovers(state.metagross.currentHP, state.metagross.maxHP)
-    }
 
     // ねむりターンの減少
     if (state.thunder.status === 'sleep' && state.thunder.sleepTurns > 0) {
@@ -426,6 +509,39 @@ export const simulateBattle = (thunder: Thunder, metagross: Metagross): boolean 
           state.metagross.hasUsedLumBerry = true
         }
       }
+    }
+
+    // ターン終了時の処理
+    
+    // ピンチきのみの発動判定（HPが1/4以下になった場合）
+    const thunderPinchResult = checkPinchBerry(
+      state.thunder.currentHP,
+      state.thunder.maxHP,
+      thunder.item,
+      state.thunder.hasUsedPinchBerry
+    )
+    if (thunderPinchResult.shouldActivate && thunderPinchResult.stat) {
+      state.thunder.statBoosts[thunderPinchResult.stat as keyof typeof state.thunder.statBoosts] = 1
+      state.thunder.hasUsedPinchBerry = true
+    }
+
+    const metagrossPinchResult = checkPinchBerry(
+      state.metagross.currentHP,
+      state.metagross.maxHP,
+      metagross.item,
+      state.metagross.hasUsedPinchBerry
+    )
+    if (metagrossPinchResult.shouldActivate && metagrossPinchResult.stat) {
+      state.metagross.statBoosts[metagrossPinchResult.stat as keyof typeof state.metagross.statBoosts] = 1
+      state.metagross.hasUsedPinchBerry = true
+    }
+
+    // たべのこしの回復
+    if (thunder.item === 'たべのこし') {
+      state.thunder.currentHP = applyLeftovers(state.thunder.currentHP, state.thunder.maxHP)
+    }
+    if (metagross.item === 'たべのこし') {
+      state.metagross.currentHP = applyLeftovers(state.metagross.currentHP, state.metagross.maxHP)
     }
   }
 

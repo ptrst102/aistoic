@@ -46,6 +46,24 @@ export const ITEM_EFFECTS = {
     multiplier: 1.1,
     boostedType: "いわ",
   },
+  ヤタピのみ: {
+    description: "HPが1/4以下になったとき、とくこうが1段階上がる（一度きり）",
+    type: "pinch_berry",
+    stat: "spAttack",
+    hpThreshold: 0.25,
+  },
+  チイラのみ: {
+    description: "HPが1/4以下になったとき、こうげきが1段階上がる（一度きり）",
+    type: "pinch_berry",
+    stat: "attack",
+    hpThreshold: 0.25,
+  },
+  カムラのみ: {
+    description: "HPが1/4以下になったとき、すばやさが1段階上がる（一度きり）",
+    type: "pinch_berry",
+    stat: "speed",
+    hpThreshold: 0.25,
+  },
 } as const;
 
 // サンダーが持てる持ち物
@@ -56,6 +74,8 @@ export const THUNDER_ITEMS = [
   "ひかりのこな",
   "せんせいのツメ",
   "たべのこし",
+  "ヤタピのみ",
+  "カムラのみ",
   "もちものなし",
 ] as const;
 
@@ -68,5 +88,7 @@ export const METAGROSS_ITEMS = [
   "たべのこし",
   "ひかりのこな",
   "かたいいし",
+  "チイラのみ",
+  "カムラのみ",
   "もちものなし",
 ] as const;

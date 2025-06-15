@@ -24,8 +24,7 @@ export const CustomMetagrossForm = ({ onSubmit, thunder }: CustomMetagrossFormPr
     spDefense: 164,
     speed: 60,
   })
-  // 持ち物はこだわりハチマキ固定
-  const item = 'こだわりハチマキ' as const
+  // 持ち物は計算時に各種類試すので、ここでは不要
 
   const totalEvs = calculateTotalEVs(evs)
   const remainingEvs = 510 - totalEvs
@@ -40,16 +39,16 @@ export const CustomMetagrossForm = ({ onSubmit, thunder }: CustomMetagrossFormPr
   }
 
   const handleSubmit = () => {
-    const metagross: Metagross = {
+    // 持ち物は呼び出し側で各種類試すので、ここでは基本情報のみ渡す
+    const metagross: Omit<Metagross, 'item'> = {
       species: 'メタグロス',
       level: 50,
       nature,
       ivs,
       evs,
-      item,
       stats: calculateStats('メタグロス', 50, nature, ivs, evs),
     }
-    onSubmit(metagross)
+    onSubmit(metagross as Metagross)
   }
 
   const stats = calculateStats('メタグロス', 50, nature, ivs, evs)
@@ -69,7 +68,7 @@ export const CustomMetagrossForm = ({ onSubmit, thunder }: CustomMetagrossFormPr
       nature,
       ivs,
       evs,
-      item,
+      item: 'こだわりハチマキ', // ダメージ表示用に仮の持ち物を設定
       stats,
     }
 

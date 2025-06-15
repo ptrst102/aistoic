@@ -64,6 +64,8 @@ export type ThunderItem =
   | "ひかりのこな"
   | "せんせいのツメ"
   | "たべのこし"
+  | "ヤタピのみ"
+  | "カムラのみ"
   | "もちものなし";
 
 export type MetagrossItem =
@@ -74,6 +76,8 @@ export type MetagrossItem =
   | "たべのこし"
   | "ひかりのこな"
   | "かたいいし"
+  | "チイラのみ"
+  | "カムラのみ"
   | "もちものなし";
 
 // ポケモンの種族

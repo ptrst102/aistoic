@@ -7,11 +7,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 
 interface WinRateTableProps {
   winRates: Record<MetagrossPreset, Record<MetagrossItem, number>> | null
-  customWinRate?: number | null
+  customWinRates?: Record<MetagrossItem, number> | null
   isCalculating?: boolean
 }
 
-export const WinRateTable = ({ winRates, customWinRate, isCalculating = false }: WinRateTableProps) => {
+export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }: WinRateTableProps) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
 
   if (isCalculating) {
@@ -104,21 +104,28 @@ export const WinRateTable = ({ winRates, customWinRate, isCalculating = false }:
                     })}
                   </tr>
                 ))}
+                {/* カスタムメタグロスの行 */}
+                {customWinRates && (
+                  <tr>
+                    <td className="p-2 border-b font-medium">カスタム</td>
+                    {itemOrder.map((item) => {
+                      const winRate = customWinRates[item]
+                      return (
+                        <td 
+                          key={item} 
+                          className={`text-center p-2 border-b ${hoveredItem === item ? 'bg-muted' : ''}`}
+                        >
+                          <div className={`rounded px-2 py-1 font-semibold ${getWinRateColorClass(winRate)}`}>
+                            {winRate.toFixed(1)}%
+                          </div>
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
-
-          {customWinRate !== undefined && customWinRate !== null && (
-            <div className="mt-6 p-4 border rounded-lg">
-              <h3 className="font-semibold mb-2">カスタムメタグロス</h3>
-              <div className="flex items-center gap-2">
-                <span>勝率:</span>
-                <div className={`rounded px-3 py-1 font-semibold ${getWinRateColorClass(customWinRate)}`}>
-                  {customWinRate.toFixed(1)}%
-                </div>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
     </TooltipProvider>
