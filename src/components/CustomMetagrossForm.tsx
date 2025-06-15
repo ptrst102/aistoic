@@ -1,34 +1,30 @@
-import { DEFAULT_EVS, DEFAULT_IVS, METAGROSS_ITEMS, NATURE_LIST } from '@/constants'
-import type { EVs, IVs, Metagross, MetagrossItem, Nature } from '@/types'
+import { DEFAULT_EVS, DEFAULT_IVS, NATURE_LIST } from '@/constants'
+import type { EVs, IVs, Metagross, Nature } from '@/types'
 import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
 import { useState, useRef } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible'
 import { Label } from './ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Slider } from './ui/slider'
 
 interface CustomMetagrossFormProps {
   onSubmit: (metagross: Metagross) => void
-  isExpanded?: boolean
-  onExpandedChange?: (expanded: boolean) => void
 }
 
-export const CustomMetagrossForm = ({ 
-  onSubmit, 
-  isExpanded = false, 
-  onExpandedChange 
-}: CustomMetagrossFormProps) => {
+export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
   const [nature, setNature] = useState<Nature>('いじっぱり')
   const [ivs, setIvs] = useState<IVs>(DEFAULT_IVS)
   const [evs, setEvs] = useState<EVs>({
     ...DEFAULT_EVS,
-    hp: 252,
-    attack: 252,
-    speed: 4,
+    hp: 244,
+    attack: 36,
+    defense: 4,
+    spDefense: 164,
+    speed: 60,
   })
-  const [item, setItem] = useState<MetagrossItem>('こだわりハチマキ')
+  // 持ち物はこだわりハチマキ固定
+  const item = 'こだわりハチマキ' as const
 
   const totalEvs = calculateTotalEVs(evs)
   const remainingEvs = 510 - totalEvs
@@ -59,24 +55,13 @@ export const CustomMetagrossForm = ({
 
   return (
     <Card className="w-full">
-      <Collapsible open={isExpanded} onOpenChange={onExpandedChange}>
-        <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>カスタムメタグロス</CardTitle>
-                <CardDescription>
-                  任意のメタグロスに対する勝率を計算（オプション）
-                </CardDescription>
-              </div>
-              <Button variant="ghost" size="sm">
-                {isExpanded ? '折りたたむ' : '展開する'}
-              </Button>
-            </div>
-          </CardHeader>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <CardContent className="space-y-6">
+      <CardHeader>
+        <CardTitle>カスタムメタグロス</CardTitle>
+        <CardDescription>
+          任意のメタグロスに対する勝率を計算
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
             {/* 性格選択 */}
             <div className="space-y-2">
               <Label htmlFor="metagross-nature">性格</Label>
@@ -231,29 +216,8 @@ export const CustomMetagrossForm = ({
               </div>
             </div>
 
-            {/* 持ち物選択 */}
-            <div className="space-y-2">
-              <Label htmlFor="metagross-item">持ち物</Label>
-              <Select value={item} onValueChange={(value) => setItem(value as MetagrossItem)}>
-                <SelectTrigger id="metagross-item">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {METAGROSS_ITEMS.map((i) => (
-                    <SelectItem key={i} value={i}>
-                      {i}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button onClick={handleSubmit} className="w-full">
-              カスタムメタグロスで計算
-            </Button>
-          </CardContent>
-        </CollapsibleContent>
-      </Collapsible>
+            {/* 持ち物はこだわりハチマキ固定 */}
+      </CardContent>
     </Card>
   )
 }

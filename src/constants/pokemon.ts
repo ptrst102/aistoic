@@ -60,25 +60,6 @@ export const METAGROSS_PRESETS: Record<
   MetagrossPreset,
   { nature: Nature; evs: EVs; stats: Stats }
 > = {
-  耐久調整型: {
-    nature: "いじっぱり",
-    evs: {
-      hp: 244,
-      attack: 36,
-      defense: 4,
-      spAttack: 0,
-      spDefense: 164,
-      speed: 60,
-    },
-    stats: {
-      hp: 186,
-      attack: 176,
-      defense: 151,
-      spAttack: 115, // 特攻は使わないが一応計算
-      spDefense: 131,
-      speed: 98,
-    },
-  },
   いじっぱりHA: {
     nature: "いじっぱり",
     evs: {

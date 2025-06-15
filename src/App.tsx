@@ -6,9 +6,9 @@ import { useState } from 'react'
 const App = () => {
   const [thunder, setThunder] = useState<Thunder | null>(null)
   const [winRates, setWinRates] = useState<Record<MetagrossPreset, Record<MetagrossItem, number>> | null>(null)
+  const [customMetagross, setCustomMetagross] = useState<Metagross | null>(null)
   const [customWinRate, setCustomWinRate] = useState<number | null>(null)
   const [isCalculating, setIsCalculating] = useState(false)
-  const [isCustomExpanded, setIsCustomExpanded] = useState(false)
 
   const handleThunderSubmit = async (newThunder: Thunder) => {
     setThunder(newThunder)
@@ -19,21 +19,29 @@ const App = () => {
     setTimeout(() => {
       const results = calculateWinRatesAgainstAllPresets(newThunder)
       setWinRates(results)
+      
+      // カスタムメタグロスが設定されている場合はその勝率も計算
+      if (customMetagross) {
+        const customRate = calculateWinRateAgainstCustom(newThunder, customMetagross)
+        setCustomWinRate(customRate)
+      }
+      
       setIsCalculating(false)
     }, 100)
   }
 
-  const handleCustomMetagrossSubmit = async (metagross: Metagross) => {
-    if (!thunder) return
-
-    setIsCalculating(true)
-
-    // 非同期で計算を実行
-    setTimeout(() => {
-      const winRate = calculateWinRateAgainstCustom(thunder, metagross)
-      setCustomWinRate(winRate)
-      setIsCalculating(false)
-    }, 100)
+  const handleCustomMetagrossChange = (metagross: Metagross) => {
+    setCustomMetagross(metagross)
+    
+    // サンダーが設定されている場合は勝率を計算
+    if (thunder) {
+      setIsCalculating(true)
+      setTimeout(() => {
+        const winRate = calculateWinRateAgainstCustom(thunder, metagross)
+        setCustomWinRate(winRate)
+        setIsCalculating(false)
+      }, 100)
+    }
   }
 
   return (
@@ -54,11 +62,7 @@ const App = () => {
           {/* 左側: 入力フォーム */}
           <div className="space-y-6">
             <ThunderForm onSubmit={handleThunderSubmit} />
-            <CustomMetagrossForm 
-              onSubmit={handleCustomMetagrossSubmit}
-              isExpanded={isCustomExpanded}
-              onExpandedChange={setIsCustomExpanded}
-            />
+            <CustomMetagrossForm onSubmit={handleCustomMetagrossChange} />
           </div>
 
           {/* 右側: 勝率表 */}

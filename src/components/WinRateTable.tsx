@@ -45,7 +45,7 @@ export const WinRateTable = ({ winRates, customWinRate, isCalculating = false }:
     )
   }
 
-  const presetOrder: MetagrossPreset[] = ['耐久調整型', 'いじっぱりHA', 'いじっぱりAS']
+  const presetOrder: MetagrossPreset[] = ['いじっぱりHA', 'いじっぱりAS']
   const itemOrder = METAGROSS_ITEMS as readonly MetagrossItem[]
 
   return (

@@ -105,7 +105,7 @@ export interface Metagross extends Omit<Pokemon, "species" | "item"> {
 }
 
 // プリセットメタグロスの識別名
-export type MetagrossPreset = "耐久調整型" | "いじっぱりHA" | "いじっぱりAS";
+export type MetagrossPreset = "いじっぱりHA" | "いじっぱりAS";
 
 // ステータスのキー
 export type StatKey = keyof Stats;
