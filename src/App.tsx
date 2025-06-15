@@ -62,7 +62,7 @@ const App = () => {
           {/* 左側: 入力フォーム */}
           <div className="space-y-6">
             <ThunderForm onSubmit={handleThunderSubmit} />
-            <CustomMetagrossForm onSubmit={handleCustomMetagrossChange} />
+            <CustomMetagrossForm onSubmit={handleCustomMetagrossChange} thunder={thunder} />
           </div>
 
           {/* 右側: 勝率表 */}

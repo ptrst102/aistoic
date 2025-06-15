@@ -1,7 +1,7 @@
 import { DEFAULT_EVS, DEFAULT_IVS, NATURE_LIST } from '@/constants'
-import type { EVs, IVs, Metagross, Nature } from '@/types'
-import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
-import { useState, useRef } from 'react'
+import type { EVs, IVs, Metagross, Nature, Thunder } from '@/types'
+import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv, calculateEvFromStat, getStatRange, calculateDamage } from '@/utils'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Label } from './ui/label'
@@ -10,9 +10,10 @@ import { Slider } from './ui/slider'
 
 interface CustomMetagrossFormProps {
   onSubmit: (metagross: Metagross) => void
+  thunder?: Thunder | null
 }
 
-export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
+export const CustomMetagrossForm = ({ onSubmit, thunder }: CustomMetagrossFormProps) => {
   const [nature, setNature] = useState<Nature>('いじっぱり')
   const [ivs, setIvs] = useState<IVs>(DEFAULT_IVS)
   const [evs, setEvs] = useState<EVs>({
@@ -52,6 +53,45 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
   }
 
   const stats = calculateStats('メタグロス', 50, nature, ivs, evs)
+
+  // メタグロスの情報が変更されたら自動的にonSubmitを呼ぶ
+  useEffect(() => {
+    handleSubmit()
+  }, [nature, ivs, evs])
+
+  // サンダーからのダメージを計算
+  const calculateThunderDamage = () => {
+    if (!thunder) return null
+
+    const metagross: Metagross = {
+      species: 'メタグロス',
+      level: 50,
+      nature,
+      ivs,
+      evs,
+      item,
+      stats,
+    }
+
+    // 10万ボルトのダメージ計算
+    const tboltMin = calculateDamage(thunder, metagross, 95, 'special', 'electric', false, 0.85)
+    const tboltMax = calculateDamage(thunder, metagross, 95, 'special', 'electric', false, 1.0)
+    const tboltCritMin = calculateDamage(thunder, metagross, 95, 'special', 'electric', true, 0.85)
+    const tboltCritMax = calculateDamage(thunder, metagross, 95, 'special', 'electric', true, 1.0)
+
+    // かみなりのダメージ計算
+    const thunderMin = calculateDamage(thunder, metagross, 120, 'special', 'electric', false, 0.85)
+    const thunderMax = calculateDamage(thunder, metagross, 120, 'special', 'electric', false, 1.0)
+    const thunderCritMin = calculateDamage(thunder, metagross, 120, 'special', 'electric', true, 0.85)
+    const thunderCritMax = calculateDamage(thunder, metagross, 120, 'special', 'electric', true, 1.0)
+
+    return {
+      tbolt: { min: tboltMin, max: tboltMax, critMin: tboltCritMin, critMax: tboltCritMax },
+      thunder: { min: thunderMin, max: thunderMax, critMin: thunderCritMin, critMax: thunderCritMax },
+    }
+  }
+
+  const damageInfo = calculateThunderDamage()
 
   return (
     <Card className="w-full">
@@ -217,6 +257,57 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
             </div>
 
             {/* 持ち物はこだわりハチマキ固定 */}
+
+            {/* サンダーからのダメージ表示 */}
+            {thunder && damageInfo && (
+              <div className="border rounded-lg p-4 bg-blue-50">
+                <h3 className="font-semibold mb-3">サンダーからの被ダメージ</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span>10万ボルト:</span>
+                    <div className="font-mono">
+                      <span>{damageInfo.tbolt.min}-{damageInfo.tbolt.max}</span>
+                      <span className="text-xs text-gray-500 ml-2">
+                        ({Math.floor((damageInfo.tbolt.min / stats.hp) * 100)}-{Math.floor((damageInfo.tbolt.max / stats.hp) * 100)}%)
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-600">
+                    <span className="ml-4">(急所):</span>
+                    <div className="font-mono">
+                      <span>{damageInfo.tbolt.critMin}-{damageInfo.tbolt.critMax}</span>
+                      <span className="text-xs text-gray-500 ml-2">
+                        ({Math.floor((damageInfo.tbolt.critMin / stats.hp) * 100)}-{Math.floor((damageInfo.tbolt.critMax / stats.hp) * 100)}%)
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>かみなり:</span>
+                    <div className="font-mono">
+                      <span>{damageInfo.thunder.min}-{damageInfo.thunder.max}</span>
+                      <span className="text-xs text-gray-500 ml-2">
+                        ({Math.floor((damageInfo.thunder.min / stats.hp) * 100)}-{Math.floor((damageInfo.thunder.max / stats.hp) * 100)}%)
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-600">
+                    <span className="ml-4">(急所):</span>
+                    <div className="font-mono">
+                      <span>{damageInfo.thunder.critMin}-{damageInfo.thunder.critMax}</span>
+                      <span className="text-xs text-gray-500 ml-2">
+                        ({Math.floor((damageInfo.thunder.critMin / stats.hp) * 100)}-{Math.floor((damageInfo.thunder.critMax / stats.hp) * 100)}%)
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* 耐久指標表示 */}
+                  <div className="border-t pt-2 mt-2 text-xs text-gray-700">
+                    <div>HP{stats.hp} → 10万ボルト {Math.ceil(stats.hp / damageInfo.tbolt.max)}発耐え</div>
+                    <div>HP{stats.hp} → かみなり {Math.ceil(stats.hp / damageInfo.thunder.max)}発耐え</div>
+                  </div>
+                </div>
+              </div>
+            )}
       </CardContent>
     </Card>
   )
