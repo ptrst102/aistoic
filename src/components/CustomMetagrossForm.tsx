@@ -60,7 +60,18 @@ export const CustomMetagrossForm = ({ onSubmit, thunder }: CustomMetagrossFormPr
 
   // サンダーからのダメージを計算
   const calculateThunderDamage = () => {
-    if (!thunder) return null
+    // thunderがない場合はデフォルトのサンダーを使用
+    const defaultThunder: Thunder = {
+      species: 'サンダー',
+      level: 50,
+      nature: 'ひかえめ',
+      ivs: DEFAULT_IVS,
+      evs: { ...DEFAULT_EVS, hp: 252, spAttack: 252, speed: 4 },
+      item: 'じしゃく',
+      electricMove: '10まんボルト',
+      stats: calculateStats('サンダー', 50, 'ひかえめ', DEFAULT_IVS, { ...DEFAULT_EVS, hp: 252, spAttack: 252, speed: 4 }),
+    }
+    const attackingThunder = thunder || defaultThunder
 
     const metagross: Metagross = {
       species: 'メタグロス',
@@ -73,16 +84,16 @@ export const CustomMetagrossForm = ({ onSubmit, thunder }: CustomMetagrossFormPr
     }
 
     // 10万ボルトのダメージ計算
-    const tboltMin = calculateDamage(thunder, metagross, 95, 'special', 'electric', false, 0.85)
-    const tboltMax = calculateDamage(thunder, metagross, 95, 'special', 'electric', false, 1.0)
-    const tboltCritMin = calculateDamage(thunder, metagross, 95, 'special', 'electric', true, 0.85)
-    const tboltCritMax = calculateDamage(thunder, metagross, 95, 'special', 'electric', true, 1.0)
+    const tboltMin = calculateDamage(attackingThunder, metagross, 95, 'special', 'electric', false, 0.85)
+    const tboltMax = calculateDamage(attackingThunder, metagross, 95, 'special', 'electric', false, 1.0)
+    const tboltCritMin = calculateDamage(attackingThunder, metagross, 95, 'special', 'electric', true, 0.85)
+    const tboltCritMax = calculateDamage(attackingThunder, metagross, 95, 'special', 'electric', true, 1.0)
 
     // かみなりのダメージ計算
-    const thunderMin = calculateDamage(thunder, metagross, 120, 'special', 'electric', false, 0.85)
-    const thunderMax = calculateDamage(thunder, metagross, 120, 'special', 'electric', false, 1.0)
-    const thunderCritMin = calculateDamage(thunder, metagross, 120, 'special', 'electric', true, 0.85)
-    const thunderCritMax = calculateDamage(thunder, metagross, 120, 'special', 'electric', true, 1.0)
+    const thunderMin = calculateDamage(attackingThunder, metagross, 120, 'special', 'electric', false, 0.85)
+    const thunderMax = calculateDamage(attackingThunder, metagross, 120, 'special', 'electric', false, 1.0)
+    const thunderCritMin = calculateDamage(attackingThunder, metagross, 120, 'special', 'electric', true, 0.85)
+    const thunderCritMax = calculateDamage(attackingThunder, metagross, 120, 'special', 'electric', true, 1.0)
 
     return {
       tbolt: { min: tboltMin, max: tboltMax, critMin: tboltCritMin, critMax: tboltCritMax },
@@ -258,7 +269,7 @@ export const CustomMetagrossForm = ({ onSubmit, thunder }: CustomMetagrossFormPr
             {/* 持ち物はこだわりハチマキ固定 */}
 
             {/* サンダーからのダメージ表示 */}
-            {thunder && damageInfo && (
+            {damageInfo && (
               <div className="border rounded-lg p-4 bg-blue-50">
                 <h3 className="font-semibold mb-3">サンダーからの被ダメージ</h3>
                 <div className="space-y-2 text-sm">

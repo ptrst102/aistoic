@@ -1,4 +1,5 @@
 import { CustomMetagrossForm, ThunderForm, WinRateTable } from '@/components'
+import { Button } from '@/components/ui/button'
 import type { Metagross, MetagrossItem, MetagrossPreset, Thunder } from '@/types'
 import { calculateWinRateAgainstCustom, calculateWinRatesAgainstAllPresets } from '@/utils'
 import { useState } from 'react'
@@ -10,38 +11,31 @@ const App = () => {
   const [customWinRates, setCustomWinRates] = useState<Record<MetagrossItem, number> | null>(null)
   const [isCalculating, setIsCalculating] = useState(false)
 
-  const handleThunderSubmit = async (newThunder: Thunder) => {
+  const handleThunderChange = (newThunder: Thunder) => {
     setThunder(newThunder)
-    setIsCalculating(true)
-    setCustomWinRates(null)
-
-    // 非同期で計算を実行
-    setTimeout(() => {
-      const results = calculateWinRatesAgainstAllPresets(newThunder)
-      setWinRates(results)
-      
-      // カスタムメタグロスが設定されている場合はその勝率も計算
-      if (customMetagross) {
-        const customRates = calculateWinRateAgainstCustom(newThunder, customMetagross)
-        setCustomWinRates(customRates)
-      }
-      
-      setIsCalculating(false)
-    }, 100)
   }
 
   const handleCustomMetagrossChange = (metagross: Metagross) => {
     setCustomMetagross(metagross)
-    
-    // サンダーが設定されている場合は勝率を計算
-    if (thunder) {
-      setIsCalculating(true)
-      setTimeout(() => {
-        const winRates = calculateWinRateAgainstCustom(thunder, metagross)
-        setCustomWinRates(winRates)
-        setIsCalculating(false)
-      }, 100)
-    }
+  }
+
+  const handleCalculate = () => {
+    if (!thunder || !customMetagross) return
+
+    setIsCalculating(true)
+    setWinRates(null)
+    setCustomWinRates(null)
+
+    // 非同期で計算を実行
+    setTimeout(() => {
+      const results = calculateWinRatesAgainstAllPresets(thunder)
+      setWinRates(results)
+      
+      const customRates = calculateWinRateAgainstCustom(thunder, customMetagross)
+      setCustomWinRates(customRates)
+      
+      setIsCalculating(false)
+    }, 100)
   }
 
   return (
@@ -57,22 +51,32 @@ const App = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* 左側: 入力フォーム */}
-          <div className="space-y-6">
-            <ThunderForm onSubmit={handleThunderSubmit} />
-            <CustomMetagrossForm onSubmit={handleCustomMetagrossChange} thunder={thunder} />
-          </div>
+      <main className="container mx-auto px-4 py-8 space-y-8">
+        {/* 上部: 入力フォーム（2列） */}
+        <div className="grid lg:grid-cols-2 gap-6">
+          <ThunderForm onSubmit={handleThunderChange} />
+          <CustomMetagrossForm onSubmit={handleCustomMetagrossChange} thunder={thunder} />
+        </div>
 
-          {/* 右側: 勝率表 */}
-          <div>
-            <WinRateTable 
-              winRates={winRates} 
-              customWinRates={customWinRates}
-              isCalculating={isCalculating}
-            />
-          </div>
+        {/* 中央: 計算ボタン */}
+        <div className="flex justify-center">
+          <Button 
+            onClick={handleCalculate} 
+            disabled={!thunder || !customMetagross || isCalculating}
+            size="lg"
+            className="w-full max-w-md"
+          >
+            {isCalculating ? '計算中...' : '勝率を計算する'}
+          </Button>
+        </div>
+
+        {/* 下部: 勝率表 */}
+        <div>
+          <WinRateTable 
+            winRates={winRates} 
+            customWinRates={customWinRates}
+            isCalculating={isCalculating}
+          />
         </div>
       </main>
 

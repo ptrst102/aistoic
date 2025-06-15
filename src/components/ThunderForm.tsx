@@ -1,7 +1,7 @@
 import { DEFAULT_EVS, DEFAULT_IVS, NATURE_LIST, THUNDER_ITEMS } from '@/constants'
 import type { EVs, IVs, Nature, Thunder, ThunderItem } from '@/types'
 import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Label } from './ui/label'
@@ -36,8 +36,9 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
     return 252
   }
 
-  const handleSubmit = () => {
-    const thunder: Thunder = {
+  // 外部からサンダーの情報を取得するメソッド
+  const getThunder = (): Thunder => {
+    return {
       species: 'サンダー',
       level: 50,
       nature,
@@ -47,8 +48,12 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
       electricMove,
       stats: calculateStats('サンダー', 50, nature, ivs, evs),
     }
-    onSubmit(thunder)
   }
+
+  // フォームの値が変更されたら自動的にonSubmitを呼ぶ
+  useEffect(() => {
+    onSubmit(getThunder())
+  }, [nature, ivs, evs, item, electricMove])
 
   const stats = calculateStats('サンダー', 50, nature, ivs, evs)
 
@@ -253,9 +258,7 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
           </Select>
         </div>
 
-        <Button onClick={handleSubmit} className="w-full">
-          計算する
-        </Button>
+        {/* 計算ボタンはAppコンポーネントに移動 */}
       </CardContent>
     </Card>
   )
