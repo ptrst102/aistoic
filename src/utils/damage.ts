@@ -29,6 +29,9 @@ export const calculateModifiers = (
   if (attacker.item === 'じしゃく' && moveType === 'electric') {
     modifier *= 1.1
   }
+  if (attacker.item === 'かたいいし' && moveType === 'rock') {
+    modifier *= 1.1
+  }
   if (attacker.item === 'こだわりハチマキ' && moveCategory === 'physical') {
     modifier *= 1.5
   }

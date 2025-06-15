@@ -11,7 +11,6 @@ interface BattleState {
     maxHP: number
     status: StatusCondition
     sleepTurns: number
-    hasUsedRest: boolean
     hasUsedLumBerry: boolean
     hasUsedSitrusBerry: boolean
   }
@@ -173,19 +172,6 @@ const executeThunderTurn = (
     return { damage: 0, causedParalysis: false }
   }
 
-  // ねむるの使用判定
-  if (
-    thunder.hasRest &&
-    !state.thunder.hasUsedRest &&
-    state.thunder.currentHP <= state.thunder.maxHP / 2 &&
-    state.thunder.currentHP < state.thunder.maxHP
-  ) {
-    state.thunder.currentHP = state.thunder.maxHP
-    state.thunder.status = 'sleep'
-    state.thunder.sleepTurns = 2
-    state.thunder.hasUsedRest = true
-    return { damage: 0, causedParalysis: false }
-  }
 
   // 電気技の使用
   const moveData = thunder.electricMove === '10まんボルト'
@@ -287,7 +273,6 @@ export const simulateBattle = (thunder: Thunder, metagross: Metagross): boolean 
       maxHP: thunder.stats.hp,
       status: 'none',
       sleepTurns: 0,
-      hasUsedRest: false,
       hasUsedLumBerry: false,
       hasUsedSitrusBerry: false,
     },
@@ -307,10 +292,10 @@ export const simulateBattle = (thunder: Thunder, metagross: Metagross): boolean 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     // ターン開始時の処理
 
-    // たべのこしの回復（サンダーはたべのこしを持てないが、将来の拡張のため）
-    // if (thunder.item === 'たべのこし') {
-    //   state.thunder.currentHP = applyLeftovers(state.thunder.currentHP, state.thunder.maxHP)
-    // }
+    // たべのこしの回復
+    if (thunder.item === 'たべのこし') {
+      state.thunder.currentHP = applyLeftovers(state.thunder.currentHP, state.thunder.maxHP)
+    }
     if (metagross.item === 'たべのこし') {
       state.metagross.currentHP = applyLeftovers(state.metagross.currentHP, state.metagross.maxHP)
     }

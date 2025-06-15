@@ -63,6 +63,7 @@ export type ThunderItem =
   | "じしゃく"
   | "ひかりのこな"
   | "せんせいのツメ"
+  | "たべのこし"
   | "もちものなし";
 
 export type MetagrossItem =
@@ -72,6 +73,7 @@ export type MetagrossItem =
   | "こだわりハチマキ"
   | "たべのこし"
   | "ひかりのこな"
+  | "かたいいし"
   | "もちものなし";
 
 // ポケモンの種族
@@ -94,7 +96,6 @@ export interface Thunder extends Omit<Pokemon, "species" | "item"> {
   species: "サンダー";
   item: ThunderItem;
   electricMove: "10まんボルト" | "かみなり";
-  hasRest: boolean;
 }
 
 // メタグロス専用の型

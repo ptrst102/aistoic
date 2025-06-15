@@ -40,6 +40,12 @@ export const ITEM_EFFECTS = {
     description: "持ち物なし",
     type: "none",
   },
+  かたいいし: {
+    description: "いわタイプの技の威力が1.1倍",
+    type: "power",
+    multiplier: 1.1,
+    boostedType: "いわ",
+  },
 } as const;
 
 // サンダーが持てる持ち物
@@ -49,6 +55,7 @@ export const THUNDER_ITEMS = [
   "じしゃく",
   "ひかりのこな",
   "せんせいのツメ",
+  "たべのこし",
   "もちものなし",
 ] as const;
 
@@ -60,5 +67,6 @@ export const METAGROSS_ITEMS = [
   "こだわりハチマキ",
   "たべのこし",
   "ひかりのこな",
+  "かたいいし",
   "もちものなし",
 ] as const;
