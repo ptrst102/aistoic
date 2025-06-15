@@ -64,22 +64,23 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
                 <tr>
                   <th className="text-left p-2 border-b">メタグロス</th>
                   {itemOrder.map((item) => (
-                    <Tooltip key={item}>
-                      <TooltipTrigger asChild>
-                        <th 
-                          className="text-center p-2 border-b cursor-help min-w-[80px]"
-                          onMouseEnter={() => setHoveredItem(item)}
-                          onMouseLeave={() => setHoveredItem(null)}
-                        >
-                          <div className="text-xs">
+                    <th 
+                      key={item}
+                      className="text-center p-2 border-b min-w-[80px]"
+                      onMouseEnter={() => setHoveredItem(item)}
+                      onMouseLeave={() => setHoveredItem(null)}
+                    >
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="text-xs cursor-help inline-block">
                             {item === 'もちものなし' ? 'なし' : item.replace('のみ', '')}
                           </div>
-                        </th>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-sm">{getItemDescription(item)}</p>
-                      </TooltipContent>
-                    </Tooltip>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="z-50">
+                          <p className="text-sm">{getItemDescription(item)}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </th>
                   ))}
                 </tr>
               </thead>

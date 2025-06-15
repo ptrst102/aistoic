@@ -1,4 +1,4 @@
-import { CustomMetagrossForm, ThunderForm, WinRateTable, HelpSection } from '@/components'
+import { CustomMetagrossForm, ThunderForm, WinRateTable, HelpSection, DamageCalculation } from '@/components'
 import { Button } from '@/components/ui/button'
 import type { Metagross, MetagrossItem, MetagrossPreset, Thunder } from '@/types'
 import { calculateWinRateAgainstCustom, calculateWinRatesAgainstAllPresets } from '@/utils'
@@ -55,7 +55,10 @@ const App = () => {
         {/* 上部: 入力フォーム（2列） */}
         <div className="grid lg:grid-cols-2 gap-6">
           <ThunderForm onSubmit={handleThunderChange} />
-          <CustomMetagrossForm onSubmit={handleCustomMetagrossChange} thunder={thunder} />
+          <div className="space-y-6">
+            <CustomMetagrossForm onSubmit={handleCustomMetagrossChange} />
+            <DamageCalculation thunder={thunder} metagross={customMetagross} />
+          </div>
         </div>
 
         {/* 中央: 計算ボタン */}
