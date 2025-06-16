@@ -1,4 +1,5 @@
 import type { Metagross, Thunder } from '@/types'
+import { random } from '@/utils/random'
 
 /**
  * ダメージ計算に必要な補正値を計算する
@@ -12,16 +13,15 @@ export const calculateModifiers = (
   let modifier = 1.0
 
   // タイプ一致ボーナス
-  if (
-    (attacker.species === 'サンダー' && moveType === 'electric') ||
-    (attacker.species === 'メタグロス' && moveType === 'rock')
-  ) {
+  // サンダーの電気技のみタイプ一致（サンダーはでんき/ひこうタイプ）
+  if ('electricMove' in attacker && moveType === 'electric') {
     modifier *= 1.5
   }
+  // メタグロスの岩技はタイプ一致しない（メタグロスははがね/エスパータイプ）
 
   // タイプ相性
-  if (moveType === 'rock' && defender.species === 'サンダー') {
-    modifier *= 2.0 // いわ→ひこう（ばつぐん）
+  if (moveType === 'rock' && 'electricMove' in defender) {
+    modifier *= 2.0 // いわ→ひこう（ばつぐん） - defenderがサンダーの場合
   }
   // でんき→はがね/エスパーは等倍なので1.0のまま
 
@@ -63,7 +63,7 @@ export const calculateDamage = (
     throw new Error('ステータスが計算されていません')
   }
 
-  const level = attacker.level
+  const level = 50 // 固定レベル
   const attack =
     moveCategory === 'physical' ? attacker.stats.attack : attacker.stats.spAttack
   const defense =
@@ -94,13 +94,13 @@ export const calculateDamage = (
  * 急所判定（1/16の確率）
  */
 export const isCriticalHit = (): boolean => {
-  return Math.random() < 1 / 16
+  return random() < 1 / 16
 }
 
 /**
  * ダメージ乱数を生成（0.85-1.00の16段階）
  */
 export const generateRandomValue = (): number => {
-  const randomIndex = Math.floor(Math.random() * 16)
+  const randomIndex = Math.floor(random() * 16)
   return (85 + randomIndex) / 100
 }

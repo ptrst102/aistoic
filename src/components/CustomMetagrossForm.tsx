@@ -1,12 +1,13 @@
 import { DEFAULT_EVS, DEFAULT_IVS, NATURE_LIST } from '@/constants'
 import type { EVs, IVs, Metagross, Nature, Thunder } from '@/types'
 import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Label } from './ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Slider } from './ui/slider'
+import { StatInput } from './common/StatInput'
 
 interface CustomMetagrossFormProps {
   onSubmit: (metagross: Metagross) => void
@@ -224,93 +225,5 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
             {/* 持ち物は計算時に各種類試すので、ここでは不要 */}
       </CardContent>
     </Card>
-  )
-}
-
-// 実数値入力用のコンポーネント
-interface StatInputProps {
-  value: number
-  onChange: (value: number) => void
-  min: number
-  max: number
-}
-
-const StatInput = ({ value, onChange, min, max }: StatInputProps) => {
-  const [inputValue, setInputValue] = useState(value.toString())
-  const [isFocused, setIsFocused] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  // 外部から値が変更された時
-  if (!isFocused && inputValue !== value.toString()) {
-    setInputValue(value.toString())
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    setInputValue(newValue)
-    
-    // 空文字列を許容
-    if (newValue === '') return
-    
-    const numValue = Number.parseInt(newValue)
-    if (!isNaN(numValue)) {
-      // 範囲内の値のみ変更を反映
-      if (numValue >= min && numValue <= max) {
-        onChange(numValue)
-      }
-    }
-  }
-
-  const handleBlur = () => {
-    setIsFocused(false)
-    
-    // フォーカスが外れた時に有効値に補正
-    if (inputValue === '') {
-      setInputValue(value.toString())
-      return
-    }
-    
-    const numValue = Number.parseInt(inputValue)
-    if (isNaN(numValue)) {
-      setInputValue(value.toString())
-      return
-    }
-    
-    // 範囲外の場合は最も近い値に補正
-    if (numValue < min) {
-      onChange(min)
-      setInputValue(min.toString())
-    } else if (numValue > max) {
-      onChange(max)
-      setInputValue(max.toString())
-    } else {
-      // 範囲内でも、現在の値と異なる場合は反映
-      if (numValue !== value) {
-        onChange(numValue)
-      }
-      setInputValue(numValue.toString())
-    }
-  }
-
-  const handleFocus = () => {
-    setIsFocused(true)
-    // 全選択して編集しやすくする
-    setTimeout(() => {
-      inputRef.current?.select()
-    }, 0)
-  }
-
-  return (
-    <input
-      ref={inputRef}
-      type="text"
-      inputMode="numeric"
-      pattern="[0-9]*"
-      value={inputValue}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      onFocus={handleFocus}
-      className="w-20 px-2 py-1 text-2xl font-bold text-center border rounded"
-    />
   )
 }

@@ -18,17 +18,18 @@ export const calculateWinRate = (
   // ステータスを計算
   const thunderWithStats: Thunder = {
     ...thunder,
-    stats: calculateStats(thunder.species, thunder.level, thunder.nature, thunder.ivs, thunder.evs),
+    stats: thunder.stats || calculateStats('サンダー', 50, thunder.nature, thunder.ivs, thunder.evs),
   }
   
   const metagrossWithStats: Metagross = {
     ...metagross,
-    stats: calculateStats(metagross.species, metagross.level, metagross.nature, metagross.ivs, metagross.evs),
+    stats: metagross.stats || calculateStats('メタグロス', 50, metagross.nature, metagross.ivs, metagross.evs),
   }
 
   let wins = 0
   for (let i = 0; i < iterations; i++) {
-    if (simulateBattle(thunderWithStats, metagrossWithStats)) {
+    const result = simulateBattle(thunderWithStats, metagrossWithStats)
+    if (result.winner === 'thunder') {
       wins++
     }
   }
