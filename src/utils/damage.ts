@@ -27,7 +27,7 @@ export const calculateModifiers = (
  * @param attacker 攻撃側のポケモン
  * @param defender 防御側のポケモン
  * @param movePower わざの威力
- * @param moveCategory わざの分類（物理/とくしゅ）
+ * @param moveCategory わざの分類（物理/特殊）
  * @param moveType 技のタイプ
  * @param isCritical 急所判定
  * @param randomValue 乱数値（0.85-1.00）

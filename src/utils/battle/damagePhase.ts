@@ -47,7 +47,7 @@ export const executeThunderTurn = (
   }
 
 
-  // 電気技の使用
+  // でんき技の使用
   const moveData = thunder.electricMove === '10まんボルト'
     ? { power: 95, accuracy: 100, paralysisChance: 10 }
     : { power: 120, accuracy: 70, paralysisChance: 30 }

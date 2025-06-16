@@ -73,7 +73,7 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="text-xs cursor-help inline-block">
-                            {item === 'もちものなし' ? 'なし' : item.replace('のみ', '')}
+                            {item === 'もちものなし' ? 'なし' : item}
                           </div>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="z-50">

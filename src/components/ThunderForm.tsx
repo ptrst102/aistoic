@@ -177,9 +177,9 @@ export const ThunderForm = ({
           </div>
         </div>
 
-        {/* 電気技 */}
+        {/* でんき技 */}
         <div className="space-y-2">
-          <Label htmlFor="electric-move">電気技</Label>
+          <Label htmlFor="electric-move">でんき技</Label>
           <Select 
             value={electricMove} 
             onValueChange={(value: string) => {
