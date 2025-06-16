@@ -39,16 +39,7 @@ export const ThunderForm = ({
 
   const updateEv = (stat: keyof EVs, value: number) => {
     const newEvs = { ...evs }
-    const oldValue = evs[stat]
-    const totalWithoutCurrent = totalEvs - oldValue
-    
-    // 合計が510を超える場合は調整
-    if (totalWithoutCurrent + value > 510) {
-      newEvs[stat] = 510 - totalWithoutCurrent
-    } else {
-      newEvs[stat] = value
-    }
-    
+    newEvs[stat] = value
     onEvsChange(newEvs)
   }
 
@@ -123,7 +114,7 @@ export const ThunderForm = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label>努力値</Label>
-            <span className="text-sm text-gray-600">
+            <span className={`text-sm ${remainingEvs < 0 ? 'text-red-600 font-bold' : 'text-gray-600'}`}>
               残り: {remainingEvs} / 510
             </span>
           </div>

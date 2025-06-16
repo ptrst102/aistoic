@@ -30,16 +30,7 @@ export const CustomMetagrossForm = ({
 
   const updateEv = (stat: keyof EVs, value: number) => {
     const newEvs = { ...evs }
-    const oldValue = evs[stat]
-    const totalWithoutCurrent = totalEvs - oldValue
-    
-    // 合計が510を超える場合は調整
-    if (totalWithoutCurrent + value > 510) {
-      newEvs[stat] = 510 - totalWithoutCurrent
-    } else {
-      newEvs[stat] = value
-    }
-    
+    newEvs[stat] = value
     onEvsChange(newEvs)
   }
 
@@ -114,7 +105,7 @@ export const CustomMetagrossForm = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label>努力値</Label>
-            <span className="text-sm text-gray-600">
+            <span className={`text-sm ${remainingEvs < 0 ? 'text-red-600 font-bold' : 'text-gray-600'}`}>
               残り: {remainingEvs} / 510
             </span>
           </div>
@@ -123,7 +114,6 @@ export const CustomMetagrossForm = ({
               const hasWaste = evs[stat] % 4 !== 0 && evs[stat] !== 252
               const { min, max } = getStatRange('メタグロス', 50, nature, ivs[stat], stat)
               const currentStat = stats[stat]
-
               return (
                 <div key={stat} className="space-y-1">
                   <div className="flex items-center justify-between">
