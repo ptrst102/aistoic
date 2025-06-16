@@ -26,10 +26,12 @@ const App = () => {
   const [metagrossNature, setMetagrossNature] = useState<Nature>('いじっぱり')
   const [metagrossIvs, setMetagrossIvs] = useState<IVs>(DEFAULT_IVS)
   const [metagrossEvs, setMetagrossEvs] = useState<EVs>({
-    ...DEFAULT_EVS,
-    hp: 252,
-    attack: 252,
-    speed: 4,
+    hp: 244,
+    attack: 36,
+    defense: 4,
+    spAttack: 0,
+    spDefense: 164,
+    speed: 60,
   })
 
   // サンダーオブジェクトを生成
