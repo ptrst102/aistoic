@@ -51,7 +51,7 @@ describe('damage utils', () => {
       expect(modifier).toBe(3.0)
     })
 
-    it('持ち物補正なしの場合の計算', () => {
+    it('もちもの補正なしの場合の計算', () => {
       const thunderNoItem = { ...mockThunder, item: 'もちものなし' as const }
       const modifier = calculateModifiers(thunderNoItem, mockMetagross, 'electric', 'special')
       // タイプ一致 1.5 のみ

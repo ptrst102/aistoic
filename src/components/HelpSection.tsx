@@ -67,10 +67,10 @@ export const HelpSection = () => {
             </section>
 
             <section>
-              <h3 className="font-semibold text-lg mb-2">持ち物の効果</h3>
+              <h3 className="font-semibold text-lg mb-2">もちものの効果</h3>
               <div className="grid md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <h4 className="font-semibold mb-1">サンダーの持ち物</h4>
+                  <h4 className="font-semibold mb-1">サンダーのもちもの</h4>
                   <ul className="space-y-1 text-gray-600">
                     <li><strong>じしゃく：</strong>でんき技の威力1.1倍</li>
                     <li><strong>ラムのみ：</strong>麻痺を1回だけ回復</li>
@@ -81,7 +81,7 @@ export const HelpSection = () => {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-1">メタグロスの持ち物</h4>
+                  <h4 className="font-semibold mb-1">メタグロスのもちもの</h4>
                   <ul className="space-y-1 text-gray-600">
                     <li><strong>こだわりハチマキ：</strong>物理技の威力1.5倍</li>
                     <li><strong>かたいいし：</strong>いわ技の威力1.1倍</li>

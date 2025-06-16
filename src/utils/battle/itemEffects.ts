@@ -68,7 +68,7 @@ export const checkPinchBerry = (
 }
 
 /**
- * 持ち物効果の適用
+ * もちもの効果の適用
  * @param pokemonState ポケモンの戦闘状態
  * @param pokemon ポケモンデータ
  * @returns 更新後の戦闘状態

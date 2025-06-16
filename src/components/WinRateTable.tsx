@@ -105,10 +105,10 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
                     })}
                   </tr>
                 ))}
-                {/* カスタムメタグロスの行 */}
+                {/* 調整メタグロスの行 */}
                 {customWinRates && (
                   <tr>
-                    <td className="p-2 border-b font-medium">カスタム</td>
+                    <td className="p-2 border-b font-medium">調整</td>
                     {itemOrder.map((item) => {
                       const winRate = customWinRates[item]
                       return (

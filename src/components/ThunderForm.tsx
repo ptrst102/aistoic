@@ -198,9 +198,9 @@ export const ThunderForm = ({
           </Select>
         </div>
 
-        {/* 持ち物 */}
+        {/* もちもの */}
         <div className="space-y-2">
-          <Label htmlFor="item">持ち物</Label>
+          <Label htmlFor="item">もちもの</Label>
           <Select 
             value={item} 
             onValueChange={(value: string) => {

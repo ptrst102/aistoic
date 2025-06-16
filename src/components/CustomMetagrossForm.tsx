@@ -39,7 +39,7 @@ export const CustomMetagrossForm = ({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>カスタムメタグロス</CardTitle>
+        <CardTitle>調整メタグロス</CardTitle>
         <CardDescription>
           Lv.50 / 実数値: {stats.hp} - {stats.attack} - {stats.defense} - {stats.spAttack} - {stats.spDefense} - {stats.speed}
         </CardDescription>

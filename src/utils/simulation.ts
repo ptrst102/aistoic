@@ -38,7 +38,7 @@ export const calculateWinRate = (
 /**
  * すべてのプリセットメタグロスに対する勝率を計算する
  * @param thunder サンダーのデータ
- * @returns プリセット名と持ち物ごとの勝率
+ * @returns プリセット名ともちものごとの勝率
  */
 export const calculateWinRatesAgainstAllPresets = (
   thunder: Thunder,
@@ -76,10 +76,10 @@ export const calculateWinRatesAgainstAllPresets = (
 }
 
 /**
- * カスタムメタグロスに対する勝率を計算する（各持ち物ごと）
+ * 調整メタグロスに対する勝率を計算する（各もちものごと）
  * @param thunder サンダーのデータ
- * @param customMetagross カスタムメタグロスのデータ（持ち物なし）
- * @returns 持ち物ごとの勝率
+ * @param customMetagross 調整メタグロスのデータ（もちものなし）
+ * @returns もちものごとの勝率
  */
 export const calculateWinRateAgainstCustom = (
   thunder: Thunder,
@@ -112,7 +112,7 @@ export const getWinRateColorClass = (winRate: number): string => {
 }
 
 /**
- * 持ち物の説明を取得する
+ * もちものの説明を取得する
  */
 export const getItemDescription = (item: string): string => {
   return ITEM_EFFECTS[item as keyof typeof ITEM_EFFECTS]?.description || ''

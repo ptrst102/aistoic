@@ -79,14 +79,14 @@ describe('simulation utils', () => {
   })
 
   describe('getItemDescription', () => {
-    it('存在する持ち物の説明を返す', () => {
+    it('存在するもちものの説明を返す', () => {
       const description = getItemDescription('じしゃく')
       expect(description).toBeTruthy()
       expect(typeof description).toBe('string')
     })
 
-    it('存在しない持ち物の場合は空文字を返す', () => {
-      const description = getItemDescription('存在しない持ち物')
+    it('存在しないもちものの場合は空文字を返す', () => {
+      const description = getItemDescription('存在しないもちもの')
       expect(description).toBe('')
     })
   })

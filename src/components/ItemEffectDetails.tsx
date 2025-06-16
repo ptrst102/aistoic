@@ -10,9 +10,9 @@ export const ItemEffectDetails = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">サンダーの持ち物効果</CardTitle>
+          <CardTitle className="text-lg">サンダーのもちもの効果</CardTitle>
           <CardDescription>
-            各持ち物の効果と計算への影響
+            各もちものの効果と計算への影響
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -61,9 +61,9 @@ export const ItemEffectDetails = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">メタグロスの持ち物効果</CardTitle>
+          <CardTitle className="text-lg">メタグロスのもちもの効果</CardTitle>
           <CardDescription>
-            各持ち物の効果と計算への影響
+            各もちものの効果と計算への影響
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">

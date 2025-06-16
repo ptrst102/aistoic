@@ -1,4 +1,4 @@
-// 持ち物の効果
+// もちものの効果
 export const ITEM_EFFECTS = {
   ラムのみ: {
     description: "状態異常を回復する（一度きり）",
@@ -37,7 +37,7 @@ export const ITEM_EFFECTS = {
     healRatio: 1 / 16,
   },
   もちものなし: {
-    description: "持ち物なし",
+    description: "もちものなし",
     type: "none",
   },
   かたいいし: {
@@ -66,7 +66,7 @@ export const ITEM_EFFECTS = {
   },
 } as const;
 
-// サンダーが持てる持ち物
+// サンダーが持てるもちもの
 export const THUNDER_ITEMS = [
   "ラムのみ",
   "オボンのみ",
@@ -79,7 +79,7 @@ export const THUNDER_ITEMS = [
   "もちものなし",
 ] as const;
 
-// メタグロスが持てる持ち物
+// メタグロスが持てるもちもの
 export const METAGROSS_ITEMS = [
   "ラムのみ",
   "オボンのみ",

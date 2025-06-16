@@ -11,7 +11,7 @@ interface DamageCalculationProps {
 export const DamageCalculation = ({ thunder, metagross }: DamageCalculationProps) => {
   const calculateDamages = () => {
 
-    // ダメージ計算（持ち物はこだわりハチマキ固定で計算）
+    // ダメージ計算（もちものはこだわりハチマキ固定で計算）
     const metagrossWithItem: Metagross = {
       ...metagross,
       item: 'こだわりハチマキ',
@@ -39,7 +39,7 @@ export const DamageCalculation = ({ thunder, metagross }: DamageCalculationProps
       <CardHeader>
         <CardTitle>ダメージ計算</CardTitle>
         <CardDescription>
-          サンダー → カスタムメタグロスへのダメージ
+          サンダー → 調整メタグロスへのダメージ
         </CardDescription>
       </CardHeader>
       <CardContent>

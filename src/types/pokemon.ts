@@ -56,7 +56,7 @@ export type Nature =
   | "きまぐれ" // 無補正
   | "まじめ"; // 無補正
 
-// 持ち物
+// もちもの
 export type ThunderItem =
   | "ラムのみ"
   | "オボンのみ"
