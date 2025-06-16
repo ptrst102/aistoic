@@ -91,7 +91,7 @@ export const ItemEffectDetails = () => {
                 <p className="text-sm text-muted-foreground">{effect.description}</p>
                 {effect.type === 'power' && 'multiplier' in effect && (
                   <p className="text-xs text-muted-foreground">
-                    {'boostedType' in effect && effect.boostedType ? `${effect.boostedType}技` : '物理技'}
+                    {'boostedType' in effect && effect.boostedType ? `${effect.boostedType}わざ` : '物理技'}
                     威力 ×{effect.multiplier.toFixed(1)}
                   </p>
                 )}

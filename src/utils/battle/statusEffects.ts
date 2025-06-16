@@ -2,8 +2,8 @@ import type { PokemonBattleState } from './battleState'
 import { random } from '@/utils/random'
 
 /**
- * 麻痺の付与判定
- * @param chance 麻痺付与確率(%)
+ * まひの付与判定
+ * @param chance まひ付与確率(%)
  */
 export const checkParalysis = (chance: number): boolean => {
   return random() < chance / 100
@@ -18,7 +18,7 @@ export const checkFlinch = (chance: number): boolean => {
 }
 
 /**
- * 麻痺による行動不能判定
+ * まひによる行動不能判定
  */
 export const isParalyzedImmobile = (): boolean => {
   return random() < 0.25

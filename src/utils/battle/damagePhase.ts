@@ -5,7 +5,7 @@ import { checkParalysis, isParalyzedImmobile, checkFlinch } from './statusEffect
 import { random } from '@/utils/random'
 
 /**
- * 技の命中判定
+ * わざの命中判定
  */
 export const checkAccuracy = (
   accuracy: number,
@@ -41,7 +41,7 @@ export const executeThunderTurn = (
     return { damage: 0, causedParalysis: false }
   }
 
-  // 麻痺による行動不能チェック
+  // まひによる行動不能チェック
   if (state.thunder.status === 'paralysis' && isParalyzedImmobile()) {
     return { damage: 0, causedParalysis: false }
   }
@@ -83,7 +83,7 @@ export const executeThunderTurn = (
     randomValue,
   )
 
-  // 麻痺判定
+  // まひ判定
   const causedParalysis = state.metagross.status === 'none' && checkParalysis(moveData.paralysisChance)
 
   return { damage, causedParalysis }
@@ -112,7 +112,7 @@ export const executeMetagrossTurn = (
     return { damage: 0, causedFlinch: false }
   }
 
-  // 麻痺による行動不能チェック
+  // まひによる行動不能チェック
   if (state.metagross.status === 'paralysis' && isParalyzedImmobile()) {
     return { damage: 0, causedFlinch: false }
   }

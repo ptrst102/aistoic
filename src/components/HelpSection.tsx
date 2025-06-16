@@ -40,15 +40,15 @@ export const HelpSection = () => {
               <h3 className="font-semibold text-lg mb-2">計算方法</h3>
               <div className="space-y-2 text-sm text-gray-600">
                 <p className="leading-relaxed">
-                  <strong>モンテカルロ法による確率計算：</strong>
+                  <strong>モンテカルロ法によるかくりつ計算：</strong>
                   10,000回の対戦をシミュレートし、勝率を算出しています。
                   そのため、計算のたびに結果がわずかに変動します（±1%程度）。
                   これは参考値として捉えてください。
                 </p>
                 <p className="leading-relaxed">
                   <strong>乱数の扱い：</strong>
-                  ダメージ乱数（0.85〜1.00）、急所率（1/16）、技の命中率、
-                  麻痺の行動不能（25%）、せんせいのツメ発動率（20%）などを
+                  ダメージ乱数（0.85〜1.00）、きゅうしょりつ（1/16）、技のめいちゅうりつ、
+                  まひのこうどうふのう（25%）、せんせいのツメはつどうりつ（20%）などを
                   実際のゲームと同様に処理しています。
                 </p>
               </div>
@@ -72,10 +72,10 @@ export const HelpSection = () => {
                 <div>
                   <h4 className="font-semibold mb-1">サンダーのもちもの</h4>
                   <ul className="space-y-1 text-gray-600">
-                    <li><strong>じしゃく：</strong>でんき技の威力1.1倍</li>
-                    <li><strong>ラムのみ：</strong>麻痺を1回だけ回復</li>
-                    <li><strong>オボンのみ：</strong>HP半分以下で30回復</li>
-                    <li><strong>たべのこし：</strong>ターン終了時に最大HP1/16回復</li>
+                    <li><strong>じしゃく：</strong>でんきわざのいりょく1.1倍</li>
+                    <li><strong>ラムのみ：</strong>まひを1回だけかいふく</li>
+                    <li><strong>オボンのみ：</strong>HP半分以下で30かいふく</li>
+                    <li><strong>たべのこし：</strong>ターン終了時に最大HP1/16かいふく</li>
                     <li><strong>ヤタピのみ：</strong>HP1/4以下でとくこう1段階上昇</li>
                     <li><strong>カムラのみ：</strong>HP1/4以下ですばやさ1段階上昇</li>
                   </ul>
@@ -83,11 +83,11 @@ export const HelpSection = () => {
                 <div>
                   <h4 className="font-semibold mb-1">メタグロスのもちもの</h4>
                   <ul className="space-y-1 text-gray-600">
-                    <li><strong>こだわりハチマキ：</strong>物理技の威力1.5倍</li>
-                    <li><strong>かたいいし：</strong>いわ技の威力1.1倍</li>
+                    <li><strong>こだわりハチマキ：</strong>ぶつりわざのいりょく1.5倍</li>
+                    <li><strong>かたいいし：</strong>いわわざのいりょく1.1倍</li>
                     <li><strong>チイラのみ：</strong>HP1/4以下でこうげき1段階上昇</li>
                     <li><strong>カムラのみ：</strong>HP1/4以下ですばやさ1段階上昇</li>
-                    <li><strong>その他：</strong>ラムのみ、オボンのみ等も選択可能</li>
+                    <li><strong>その他：</strong>ラムのみ、オボンのみ等も選択かのう</li>
                   </ul>
                 </div>
               </div>

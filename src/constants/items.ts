@@ -10,13 +10,13 @@ export const ITEM_EFFECTS = {
     healAmount: 30,
   },
   じしゃく: {
-    description: "でんきタイプの技の威力が1.1倍",
+    description: "電気タイプのわざの威力が1.1倍",
     type: "power",
     multiplier: 1.1,
     boostedType: "でんき",
   },
   ひかりのこな: {
-    description: "相手の技の命中率を0.9倍",
+    description: "相手のわざの命中率を0.9倍",
     type: "evasion",
     multiplier: 0.9,
   },
@@ -41,7 +41,7 @@ export const ITEM_EFFECTS = {
     type: "none",
   },
   かたいいし: {
-    description: "いわタイプの技の威力が1.1倍",
+    description: "いわタイプのわざの威力が1.1倍",
     type: "power",
     multiplier: 1.1,
     boostedType: "いわ",

@@ -26,8 +26,8 @@ export const calculateModifiers = (
  * 第三世代のダメージ計算式に基づいてダメージを計算する
  * @param attacker 攻撃側のポケモン
  * @param defender 防御側のポケモン
- * @param movePower 技の威力
- * @param moveCategory 技の分類（物理/特殊）
+ * @param movePower わざの威力
+ * @param moveCategory わざの分類（物理/とくしゅ）
  * @param moveType 技のタイプ
  * @param isCritical 急所判定
  * @param randomValue 乱数値（0.85-1.00）
