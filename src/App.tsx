@@ -1,43 +1,71 @@
 import { CustomMetagrossForm, ThunderForm, WinRateTable, HelpSection, DamageCalculation } from '@/components'
-import type { CustomMetagrossFormRef, ThunderFormRef } from '@/components'
 import { Button } from '@/components/ui/button'
-import type { Metagross, MetagrossItem, MetagrossPreset, Thunder } from '@/types'
-import { calculateWinRateAgainstCustom, calculateWinRatesAgainstAllPresets } from '@/utils'
-import { useState, useRef } from 'react'
+import type { Metagross, MetagrossItem, MetagrossPreset, Thunder, Nature, IVs, EVs, ThunderItem } from '@/types'
+import { calculateWinRateAgainstCustom, calculateWinRatesAgainstAllPresets, calculateStats } from '@/utils'
+import { DEFAULT_EVS, DEFAULT_IVS } from '@/constants'
+import { useState } from 'react'
 
 const App = () => {
   const [winRates, setWinRates] = useState<Record<MetagrossPreset, Record<MetagrossItem, number>> | null>(null)
   const [customWinRates, setCustomWinRates] = useState<Record<MetagrossItem, number> | null>(null)
   const [isCalculating, setIsCalculating] = useState(false)
   
-  // ダメージ計算用のstate
-  const [displayThunder, setDisplayThunder] = useState<Thunder | null>(null)
-  const [displayMetagross, setDisplayMetagross] = useState<Metagross | null>(null)
+  // サンダーの状態管理
+  const [thunderNature, setThunderNature] = useState<Nature>('ひかえめ')
+  const [thunderIvs, setThunderIvs] = useState<IVs>(DEFAULT_IVS)
+  const [thunderEvs, setThunderEvs] = useState<EVs>({
+    ...DEFAULT_EVS,
+    hp: 252,
+    spAttack: 252,
+    speed: 4,
+  })
+  const [thunderItem, setThunderItem] = useState<ThunderItem>('じしゃく')
+  const [electricMove, setElectricMove] = useState<'10まんボルト' | 'かみなり'>('10まんボルト')
   
-  // フォームへの参照
-  const thunderFormRef = useRef<ThunderFormRef>(null)
-  const customMetagrossFormRef = useRef<CustomMetagrossFormRef>(null)
+  // メタグロスの状態管理
+  const [metagrossNature, setMetagrossNature] = useState<Nature>('いじっぱり')
+  const [metagrossIvs, setMetagrossIvs] = useState<IVs>(DEFAULT_IVS)
+  const [metagrossEvs, setMetagrossEvs] = useState<EVs>({
+    ...DEFAULT_EVS,
+    hp: 252,
+    attack: 252,
+    speed: 4,
+  })
+
+  // サンダーオブジェクトを生成
+  const thunder: Thunder = {
+    species: 'サンダー',
+    level: 50,
+    nature: thunderNature,
+    ivs: thunderIvs,
+    evs: thunderEvs,
+    item: thunderItem,
+    electricMove,
+    stats: calculateStats('サンダー', 50, thunderNature, thunderIvs, thunderEvs),
+  }
+  
+  // メタグロスオブジェクトを生成
+  const metagross: Metagross = {
+    species: 'メタグロス',
+    level: 50,
+    nature: metagrossNature,
+    ivs: metagrossIvs,
+    evs: metagrossEvs,
+    item: 'こだわりハチマキ', // デフォルト値
+    stats: calculateStats('メタグロス', 50, metagrossNature, metagrossIvs, metagrossEvs),
+  }
 
   const handleCalculate = () => {
-    if (!thunderFormRef.current || !customMetagrossFormRef.current) return
-    
-    const thunder = thunderFormRef.current.getThunder()
-    const customMetagross = customMetagrossFormRef.current.getMetagross()
-
     setIsCalculating(true)
     setWinRates(null)
     setCustomWinRates(null)
-    
-    // ダメージ計算用に現在の値を設定
-    setDisplayThunder(thunder)
-    setDisplayMetagross(customMetagross)
 
     // 非同期で計算を実行
     setTimeout(() => {
       const results = calculateWinRatesAgainstAllPresets(thunder)
       setWinRates(results)
       
-      const customRates = calculateWinRateAgainstCustom(thunder, customMetagross)
+      const customRates = calculateWinRateAgainstCustom(thunder, metagross)
       setCustomWinRates(customRates)
       
       setIsCalculating(false)
@@ -61,10 +89,31 @@ const App = () => {
       <main className="container mx-auto px-4 py-8 space-y-8">
         {/* 上部: 入力フォーム（2列） */}
         <div className="grid lg:grid-cols-2 gap-6">
-          <ThunderForm ref={thunderFormRef} />
+          <ThunderForm
+            nature={thunderNature}
+            onNatureChange={setThunderNature}
+            ivs={thunderIvs}
+            onIvsChange={setThunderIvs}
+            evs={thunderEvs}
+            onEvsChange={setThunderEvs}
+            item={thunderItem}
+            onItemChange={setThunderItem}
+            electricMove={electricMove}
+            onElectricMoveChange={setElectricMove}
+          />
           <div className="space-y-6">
-            <CustomMetagrossForm ref={customMetagrossFormRef} />
-            <DamageCalculation thunder={displayThunder} metagross={displayMetagross} />
+            <CustomMetagrossForm
+              nature={metagrossNature}
+              onNatureChange={setMetagrossNature}
+              ivs={metagrossIvs}
+              onIvsChange={setMetagrossIvs}
+              evs={metagrossEvs}
+              onEvsChange={setMetagrossEvs}
+            />
+            <DamageCalculation 
+              thunder={thunder} 
+              metagross={metagross}
+            />
           </div>
         </div>
 
