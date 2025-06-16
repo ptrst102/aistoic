@@ -1,20 +1,24 @@
-import { DEFAULT_EVS, DEFAULT_IVS } from '@/constants'
-import type { EVs, IVs, Metagross, Nature, Thunder } from '@/types'
+import { DEFAULT_EVS, DEFAULT_IVS, STAT_LABELS, STAT_KEYS } from '@/constants'
+import type { EVs, IVs, Metagross, Nature } from '@/types'
 import { calculateStats, calculateTotalEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useImperativeHandle, forwardRef } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Label } from './ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Slider } from './ui/slider'
 import { StatInput } from './common/StatInput'
 import { NatureSelectWithGroups } from './common/NatureSelectWithGroups'
 
-interface CustomMetagrossFormProps {
-  onSubmit: (metagross: Metagross) => void
+export interface CustomMetagrossFormRef {
+  getMetagross: () => Metagross
 }
 
-export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
+interface CustomMetagrossFormProps {
+  onChange?: () => void // 値が変更されたときのコールバック（オプショナル）
+}
+
+export const CustomMetagrossForm = forwardRef<CustomMetagrossFormRef, CustomMetagrossFormProps>(
+  ({ onChange }, ref) => {
   const [nature, setNature] = useState<Nature>('いじっぱり')
   const [ivs, setIvs] = useState<IVs>(DEFAULT_IVS)
   const [evs, setEvs] = useState<EVs>({
@@ -33,40 +37,23 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
   const updateEv = (stat: keyof EVs, value: number) => {
     const newEvs = { ...evs, [stat]: value }
     setEvs(newEvs)
-    // 値が変更されたら直接onSubmitを呼ぶ
-    const metagross: Metagross = {
-      species: 'メタグロス',
-      level: 50,
-      nature,
-      ivs,
-      evs: newEvs,
-      stats: calculateStats('メタグロス', 50, nature, ivs, newEvs),
-      item: 'もちものなし', // 呼び出し側で各種類試すので、ここではデフォルト値
-    }
-    onSubmit(metagross)
   }
 
 
   const stats = calculateStats('メタグロス', 50, nature, ivs, evs)
 
-  // 性格、個体値、努力値が変更されたときにonSubmitを呼ぶヘルパー関数
-  const submitMetagross = useCallback((newNature: Nature = nature, newIvs: IVs = ivs, newEvs: EVs = evs) => {
-    const metagross: Metagross = {
+  // 親コンポーネントからメタグロスの情報を取得できるようにする
+  useImperativeHandle(ref, () => ({
+    getMetagross: () => ({
       species: 'メタグロス',
       level: 50,
-      nature: newNature,
-      ivs: newIvs,
-      evs: newEvs,
-      stats: calculateStats('メタグロス', 50, newNature, newIvs, newEvs),
+      nature,
+      ivs,
+      evs,
+      stats,
       item: 'もちものなし', // 呼び出し側で各種類試すので、ここではデフォルト値
-    }
-    onSubmit(metagross)
-  }, [onSubmit, nature, ivs, evs])
-
-  // 初回レンダリング時に初期値でonSubmitを呼ぶ
-  useEffect(() => {
-    submitMetagross()
-  }, [submitMetagross])
+    }),
+  }), [nature, ivs, evs, stats])
 
 
   return (
@@ -85,7 +72,7 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                 value={nature}
                 onValueChange={(value) => {
                   setNature(value)
-                  submitMetagross(value, ivs, evs)
+                  onChange?.()
                 }}
                 id="metagross-nature"
               />
@@ -101,15 +88,7 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
               </div>
 
               <div className="space-y-3">
-                {(['hp', 'attack', 'defense', 'spAttack', 'spDefense', 'speed'] as const).map((stat) => {
-                  const statLabels = {
-                    hp: 'HP',
-                    attack: 'こうげき',
-                    defense: 'ぼうぎょ',
-                    spAttack: 'とくこう',
-                    spDefense: 'とくぼう',
-                    speed: 'すばやさ',
-                  }
+                {STAT_KEYS.map((stat) => {
                   const optimalEv = getOptimalEv('メタグロス', 50, nature, ivs, evs, stat)
                   const hasWaste = optimalEv !== null
                   const wasteAmount = hasWaste ? evs[stat] - optimalEv : 0
@@ -117,7 +96,7 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                   return (
                     <div key={stat} className="border rounded-lg p-4 space-y-3">
                       <div className="flex items-center justify-between">
-                        <Label className="text-base font-semibold">{statLabels[stat]}</Label>
+                        <Label className="text-base font-semibold">{STAT_LABELS[stat]}</Label>
                         <div className="flex items-center gap-2">
                           <StatInput
                             value={stats[stat]}
@@ -147,9 +126,8 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                               value={ivs[stat]}
                               onChange={(e) => {
                                 const newValue = Math.max(0, Math.min(31, Number.parseInt(e.target.value) || 0))
-                                const newIvs = { ...ivs, [stat]: newValue }
-                                setIvs(newIvs)
-                                submitMetagross(nature, newIvs, evs)
+                                setIvs({ ...ivs, [stat]: newValue })
+                                onChange?.()
                               }}
                               className="w-14 px-2 py-1 text-sm border rounded"
                               min={0}
@@ -159,9 +137,8 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                const newIvs = { ...ivs, [stat]: 31 }
-                                setIvs(newIvs)
-                                submitMetagross(nature, newIvs, evs)
+                                setIvs({ ...ivs, [stat]: 31 })
+                                onChange?.()
                               }}
                               className="h-7 px-2 text-xs"
                             >
@@ -171,9 +148,8 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                const newIvs = { ...ivs, [stat]: 0 }
-                                setIvs(newIvs)
-                                submitMetagross(nature, newIvs, evs)
+                                setIvs({ ...ivs, [stat]: 0 })
+                                onChange?.()
                               }}
                               className="h-7 px-2 text-xs"
                             >
@@ -210,6 +186,7 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                               variant="outline"
                               onClick={() => {
                                 updateEv(stat, 252)
+                                onChange?.()
                               }}
                               className="h-7 px-2 text-xs"
                             >
@@ -220,6 +197,7 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                               variant="outline"
                               onClick={() => {
                                 updateEv(stat, 0)
+                                onChange?.()
                               }}
                               className="h-7 px-2 text-xs"
                             >
@@ -233,6 +211,7 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                         value={[evs[stat]]}
                         onValueChange={(values) => {
                           updateEv(stat, values[0])
+                          onChange?.()
                         }}
                         max={252}
                         step={4}
@@ -248,4 +227,6 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
       </CardContent>
     </Card>
   )
-}
+})
+
+CustomMetagrossForm.displayName = 'CustomMetagrossForm'

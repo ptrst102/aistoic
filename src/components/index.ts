@@ -1,5 +1,7 @@
 export { CustomMetagrossForm } from './CustomMetagrossForm'
+export type { CustomMetagrossFormRef } from './CustomMetagrossForm'
 export { ThunderForm } from './ThunderForm'
+export type { ThunderFormRef } from './ThunderForm'
 export { WinRateTable } from './WinRateTable'
 export { HelpSection } from './HelpSection'
 export { DamageCalculation } from './DamageCalculation'

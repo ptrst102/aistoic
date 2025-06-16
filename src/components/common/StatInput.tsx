@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 
 interface StatInputProps {
@@ -9,21 +9,18 @@ interface StatInputProps {
 }
 
 export const StatInput = ({ value, onChange, min, max }: StatInputProps) => {
-  const [inputValue, setInputValue] = useState(value.toString())
   const [isFocused, setIsFocused] = useState(false)
+  const [localValue, setLocalValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (!isFocused) {
-      setInputValue(value.toString())
-    }
-  }, [value, isFocused])
+  
+  // フォーカス中はlocalValueを使い、それ以外はvalueを表示
+  const displayValue = isFocused ? localValue : value.toString()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     
     if (newValue === '' || /^\d+$/.test(newValue)) {
-      setInputValue(newValue)
+      setLocalValue(newValue)
       
       if (newValue !== '') {
         const numValue = Number.parseInt(newValue, 10)
@@ -37,26 +34,23 @@ export const StatInput = ({ value, onChange, min, max }: StatInputProps) => {
   const handleBlur = () => {
     setIsFocused(false)
     
-    const numValue = Number.parseInt(inputValue, 10)
-    if (Number.isNaN(numValue) || inputValue === '') {
-      setInputValue(value.toString())
+    const numValue = Number.parseInt(localValue, 10)
+    if (Number.isNaN(numValue) || localValue === '') {
+      setLocalValue(value.toString())
     } else if (numValue < min) {
       onChange(min)
-      setInputValue(min.toString())
     } else if (numValue > max) {
       onChange(max)
-      setInputValue(max.toString())
     } else {
       onChange(numValue)
-      setInputValue(numValue.toString())
     }
   }
 
-  const handleFocus = () => {
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(true)
-    setTimeout(() => {
-      inputRef.current?.select()
-    }, 0)
+    setLocalValue(value.toString())
+    // Reactイベントハンドラ内で直接selectを呼ぶ
+    e.target.select()
   }
 
   return (
@@ -67,7 +61,7 @@ export const StatInput = ({ value, onChange, min, max }: StatInputProps) => {
         type="text"
         inputMode="numeric"
         pattern="[0-9]*"
-        value={inputValue}
+        value={displayValue}
         onChange={handleChange}
         onBlur={handleBlur}
         onFocus={handleFocus}

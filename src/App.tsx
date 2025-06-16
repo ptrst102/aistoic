@@ -1,30 +1,37 @@
 import { CustomMetagrossForm, ThunderForm, WinRateTable, HelpSection, DamageCalculation } from '@/components'
+import type { CustomMetagrossFormRef, ThunderFormRef } from '@/components'
 import { Button } from '@/components/ui/button'
 import type { Metagross, MetagrossItem, MetagrossPreset, Thunder } from '@/types'
 import { calculateWinRateAgainstCustom, calculateWinRatesAgainstAllPresets } from '@/utils'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 const App = () => {
-  const [thunder, setThunder] = useState<Thunder | null>(null)
   const [winRates, setWinRates] = useState<Record<MetagrossPreset, Record<MetagrossItem, number>> | null>(null)
-  const [customMetagross, setCustomMetagross] = useState<Metagross | null>(null)
   const [customWinRates, setCustomWinRates] = useState<Record<MetagrossItem, number> | null>(null)
   const [isCalculating, setIsCalculating] = useState(false)
-
-  const handleThunderChange = (newThunder: Thunder) => {
-    setThunder(newThunder)
-  }
-
-  const handleCustomMetagrossChange = (metagross: Metagross) => {
-    setCustomMetagross(metagross)
-  }
+  const [canCalculate, setCanCalculate] = useState(false)
+  
+  // ダメージ計算用のstate
+  const [displayThunder, setDisplayThunder] = useState<Thunder | null>(null)
+  const [displayMetagross, setDisplayMetagross] = useState<Metagross | null>(null)
+  
+  // フォームへの参照
+  const thunderFormRef = useRef<ThunderFormRef>(null)
+  const customMetagrossFormRef = useRef<CustomMetagrossFormRef>(null)
 
   const handleCalculate = () => {
-    if (!thunder || !customMetagross) return
+    if (!thunderFormRef.current || !customMetagrossFormRef.current) return
+    
+    const thunder = thunderFormRef.current.getThunder()
+    const customMetagross = customMetagrossFormRef.current.getMetagross()
 
     setIsCalculating(true)
     setWinRates(null)
     setCustomWinRates(null)
+    
+    // ダメージ計算用に現在の値を設定
+    setDisplayThunder(thunder)
+    setDisplayMetagross(customMetagross)
 
     // 非同期で計算を実行
     setTimeout(() => {
@@ -36,6 +43,11 @@ const App = () => {
       
       setIsCalculating(false)
     }, 100)
+  }
+  
+  const handleFormChange = () => {
+    // フォームの値が変更されたら計算ボタンを有効化
+    setCanCalculate(true)
   }
 
   return (
@@ -54,10 +66,10 @@ const App = () => {
       <main className="container mx-auto px-4 py-8 space-y-8">
         {/* 上部: 入力フォーム（2列） */}
         <div className="grid lg:grid-cols-2 gap-6">
-          <ThunderForm onSubmit={handleThunderChange} />
+          <ThunderForm ref={thunderFormRef} onChange={handleFormChange} />
           <div className="space-y-6">
-            <CustomMetagrossForm onSubmit={handleCustomMetagrossChange} />
-            <DamageCalculation thunder={thunder} metagross={customMetagross} />
+            <CustomMetagrossForm ref={customMetagrossFormRef} onChange={handleFormChange} />
+            <DamageCalculation thunder={displayThunder} metagross={displayMetagross} />
           </div>
         </div>
 
@@ -65,7 +77,7 @@ const App = () => {
         <div className="flex justify-center">
           <Button 
             onClick={handleCalculate} 
-            disabled={!thunder || !customMetagross || isCalculating}
+            disabled={!canCalculate || isCalculating}
             size="lg"
             className="w-full max-w-md"
           >
