@@ -106,7 +106,7 @@ export const ThunderForm = ({
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        onIvsChange({ ...ivs, [stat]: 0 })
+                        onIvsChange({ ...ivs, [stat]: 30 })
                       }}
                       className="h-6 px-1.5 text-xs"
                     >
