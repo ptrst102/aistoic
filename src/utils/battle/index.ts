@@ -126,8 +126,8 @@ export const simulateBattle = (
   
   // 詳細情報の記録
   let thunderEverFlinched = false
-  let metagrossEverFlinched = false
-  let thunderEverParalyzed = false
+  const metagrossEverFlinched = false
+  const thunderEverParalyzed = false
   let metagrossEverParalyzed = false
   let winReason: 'damage' | 'struggle' | 'other' = 'damage'
 

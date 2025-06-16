@@ -130,7 +130,7 @@ describe('damage utils', () => {
     it('最低でも1ダメージを与える', () => {
       const weakThunder = {
         ...mockThunder,
-        stats: { ...mockThunder.stats!, spAttack: 1 },
+        stats: { ...mockThunder.stats, spAttack: 1 },
       }
       
       const damage = calculateDamage(
