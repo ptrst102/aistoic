@@ -71,7 +71,7 @@ const checkBattleEnd = (state: BattleState): 'thunder' | 'metagross' | null => {
  */
 const processTurnStart = (state: BattleState, thunder: Thunder, metagross: Metagross): BattleState => {
   // たべのこしの回復（ターン開始時）
-  let updatedState = { ...state }
+  const updatedState = { ...state }
   
   if (thunder.item === 'たべのこし') {
     const healAmount = Math.floor(updatedState.thunder.maxHP / 16)
@@ -128,7 +128,7 @@ export const simulateBattle = (
     // 行動順の決定
     const moveOrder = determineTurnOrder(thunder, metagross, state)
     let thunderFlinched = false
-    let metagrossFlinched = false
+    const metagrossFlinched = false
 
     if (moveOrder === 'thunder') {
       // サンダーが先制

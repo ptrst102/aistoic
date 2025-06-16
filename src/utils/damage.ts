@@ -10,33 +10,16 @@ export const calculateModifiers = (
   moveType: 'electric' | 'rock',
   moveCategory: 'physical' | 'special',
 ) => {
-  let modifier = 1.0
-
-  // タイプ一致ボーナス
-  // サンダーの電気技のみタイプ一致（サンダーはでんき/ひこうタイプ）
-  if ('electricMove' in attacker && moveType === 'electric') {
-    modifier *= 1.5
-  }
-  // メタグロスの岩技はタイプ一致しない（メタグロスははがね/エスパータイプ）
-
-  // タイプ相性
-  if (moveType === 'rock' && 'electricMove' in defender) {
-    modifier *= 2.0 // いわ→ひこう（ばつぐん） - defenderがサンダーの場合
-  }
-  // でんき→はがね/エスパーは等倍なので1.0のまま
-
-  // 持ち物補正
-  if (attacker.item === 'じしゃく' && moveType === 'electric') {
-    modifier *= 1.1
-  }
-  if (attacker.item === 'かたいいし' && moveType === 'rock') {
-    modifier *= 1.1
-  }
-  if (attacker.item === 'こだわりハチマキ' && moveCategory === 'physical') {
-    modifier *= 1.5
-  }
-
-  return modifier
+  const stab = ('electricMove' in attacker && moveType === 'electric') ? 1.5 : 1.0
+  const typeEffectiveness = (moveType === 'rock' && 'electricMove' in defender) ? 2.0 : 1.0
+  const itemBonus = (() => {
+    if (attacker.item === 'じしゃく' && moveType === 'electric') return 1.1
+    if (attacker.item === 'かたいいし' && moveType === 'rock') return 1.1
+    if (attacker.item === 'こだわりハチマキ' && moveCategory === 'physical') return 1.5
+    return 1.0
+  })()
+  
+  return stab * typeEffectiveness * itemBonus
 }
 
 /**
@@ -70,24 +53,22 @@ export const calculateDamage = (
     moveCategory === 'physical' ? defender.stats.defense : defender.stats.spDefense
 
   // 基本ダメージ計算
-  let damage = Math.floor(
+  const baseDamage = Math.floor(
     Math.floor((Math.floor((level * 2) / 5 + 2) * movePower * attack) / defense) / 50 + 2,
   )
 
   // 各種補正を適用
   const modifiers = calculateModifiers(attacker, defender, moveType, moveCategory)
-  damage = Math.floor(damage * modifiers)
+  const modifiedDamage = Math.floor(baseDamage * modifiers)
 
   // 乱数補正
-  damage = Math.floor(damage * randomValue)
+  const randomizedDamage = Math.floor(modifiedDamage * randomValue)
 
   // 急所補正
-  if (isCritical) {
-    damage *= 2
-  }
+  const finalDamage = isCritical ? randomizedDamage * 2 : randomizedDamage
 
   // 最低でも1ダメージ
-  return Math.max(1, damage)
+  return Math.max(1, finalDamage)
 }
 
 /**

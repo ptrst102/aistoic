@@ -27,18 +27,16 @@ export const getOptimalEv = (
   const currentValue = currentStats[stat]
 
   // 努力値を減らしながら実数値が変わらないところを探す
-  let optimalEv = currentEv
-  for (let ev = currentEv - 4; ev >= 0; ev -= 4) {
+  const evCandidates = Array.from(
+    { length: Math.floor(currentEv / 4) + 1 },
+    (_, i) => currentEv - i * 4
+  ).filter(ev => ev >= 0)
+
+  const optimalEv = evCandidates.reduce((optimal, ev) => {
     const testEvs = { ...evs, [stat]: ev }
     const testStats = calculateStats(species, level, nature, ivs, testEvs)
-    
-    if (testStats[stat] < currentValue) {
-      // 実数値が下がったら、その前の値が最適値
-      optimalEv = ev + 4
-      break
-    }
-    optimalEv = ev
-  }
+    return testStats[stat] === currentValue ? ev : optimal
+  }, currentEv)
 
   // 無駄がある場合のみ返す
   return optimalEv < currentEv ? optimalEv : null
@@ -55,12 +53,13 @@ export const checkAllEvWaste = (
   evs: EVs
 ): Record<keyof EVs, number | null> => {
   const stats = ['hp', 'attack', 'defense', 'spAttack', 'spDefense', 'speed'] as const
-  const result = {} as Record<keyof EVs, number | null>
-
+  
+  const result: Record<keyof EVs, number | null> = {}
+  
   for (const stat of stats) {
     result[stat] = getOptimalEv(species, level, nature, ivs, evs, stat)
   }
-
+  
   return result
 }
 
@@ -75,14 +74,11 @@ export const getTotalEvWaste = (
   evs: EVs
 ): number => {
   const wasteCheck = checkAllEvWaste(species, level, nature, ivs, evs)
-  let totalWaste = 0
-
-  for (const stat in wasteCheck) {
-    const optimal = wasteCheck[stat as keyof EVs]
+  
+  return Object.entries(wasteCheck).reduce((totalWaste, [stat, optimal]) => {
     if (optimal !== null) {
-      totalWaste += evs[stat as keyof EVs] - optimal
+      return totalWaste + (evs[stat as keyof EVs] - optimal)
     }
-  }
-
-  return totalWaste
+    return totalWaste
+  }, 0)
 }

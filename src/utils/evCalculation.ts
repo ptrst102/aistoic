@@ -38,15 +38,19 @@ export const calculateEvFromStat = (
     
     // 目標値に到達できない場合は、最も近い努力値を探す
     if (actualValue !== targetValue) {
-      for (let testEv = Math.max(0, ev - 8); testEv <= Math.min(252, ev + 8); testEv += 4) {
+      const testEvs = Array.from(
+        { length: Math.floor((Math.min(252, ev + 8) - Math.max(0, ev - 8)) / 4) + 1 },
+        (_, i) => Math.max(0, ev - 8) + i * 4
+      )
+      
+      const matchingEv = testEvs.find(testEv => {
         const testValue = Math.floor(
           Math.floor((baseStat * 2 + iv + Math.floor(testEv / 4)) * level / 100) + 10 + level
         )
-        if (testValue === targetValue) {
-          return testEv
-        }
-      }
-      return null
+        return testValue === targetValue
+      })
+      
+      return matchingEv ?? null
     }
     
     return ev
@@ -68,15 +72,19 @@ export const calculateEvFromStat = (
     )
     
     if (actualValue !== targetValue) {
-      for (let testEv = Math.max(0, ev - 8); testEv <= Math.min(252, ev + 8); testEv += 4) {
+      const testEvs = Array.from(
+        { length: Math.floor((Math.min(252, ev + 8) - Math.max(0, ev - 8)) / 4) + 1 },
+        (_, i) => Math.max(0, ev - 8) + i * 4
+      )
+      
+      const matchingEv = testEvs.find(testEv => {
         const testValue = Math.floor(
           (Math.floor((baseStat * 2 + iv + Math.floor(testEv / 4)) * level / 100) + 5) * natureMod
         )
-        if (testValue === targetValue) {
-          return testEv
-        }
-      }
-      return null
+        return testValue === targetValue
+      })
+      
+      return matchingEv ?? null
     }
     
     return ev

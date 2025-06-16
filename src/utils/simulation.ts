@@ -26,13 +26,11 @@ export const calculateWinRate = (
     stats: metagross.stats || calculateStats('メタグロス', 50, metagross.nature, metagross.ivs, metagross.evs),
   }
 
-  let wins = 0
-  for (let i = 0; i < iterations; i++) {
-    const result = simulateBattle(thunderWithStats, metagrossWithStats)
-    if (result.winner === 'thunder') {
-      wins++
-    }
-  }
+  const results = Array.from({ length: iterations }, () => 
+    simulateBattle(thunderWithStats, metagrossWithStats)
+  )
+  
+  const wins = results.filter(result => result.winner === 'thunder').length
 
   return (wins / iterations) * 100
 }
@@ -45,13 +43,11 @@ export const calculateWinRate = (
 export const calculateWinRatesAgainstAllPresets = (
   thunder: Thunder,
 ): Record<MetagrossPreset, Record<MetagrossItem, number>> => {
-  const results = {} as Record<MetagrossPreset, Record<MetagrossItem, number>>
-
-  // 各プリセットに対して計算
+  const results: Record<MetagrossPreset, Record<MetagrossItem, number>> = {}
+  
   for (const [presetName, preset] of Object.entries(METAGROSS_PRESETS)) {
-    results[presetName as MetagrossPreset] = {} as Record<MetagrossItem, number>
-
-    // 各持ち物に対して計算
+    const itemResults: Record<MetagrossItem, number> = {}
+    
     for (const item of METAGROSS_ITEMS) {
       const metagross: Metagross = {
         species: 'メタグロス',
@@ -70,10 +66,12 @@ export const calculateWinRatesAgainstAllPresets = (
       }
 
       const winRate = calculateWinRate(thunder, metagross, 10000)
-      results[presetName as MetagrossPreset][item as MetagrossItem] = winRate
+      itemResults[item] = winRate
     }
+    
+    results[presetName as MetagrossPreset] = itemResults
   }
-
+  
   return results
 }
 
@@ -87,9 +85,8 @@ export const calculateWinRateAgainstCustom = (
   thunder: Thunder,
   customMetagross: Omit<Metagross, 'item'>,
 ): Record<MetagrossItem, number> => {
-  const results = {} as Record<MetagrossItem, number>
-
-  // 各持ち物に対して計算
+  const results: Record<MetagrossItem, number> = {}
+  
   for (const item of METAGROSS_ITEMS) {
     const metagrossWithItem: Metagross = {
       ...customMetagross,
@@ -98,7 +95,7 @@ export const calculateWinRateAgainstCustom = (
     
     results[item] = calculateWinRate(thunder, metagrossWithItem, 10000)
   }
-
+  
   return results
 }
 

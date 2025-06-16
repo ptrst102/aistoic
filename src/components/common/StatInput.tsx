@@ -26,8 +26,8 @@ export const StatInput = ({ value, onChange, min, max }: StatInputProps) => {
       setInputValue(newValue)
       
       if (newValue !== '') {
-        const numValue = parseInt(newValue, 10)
-        if (!isNaN(numValue) && numValue >= min && numValue <= max) {
+        const numValue = Number.parseInt(newValue, 10)
+        if (!Number.isNaN(numValue) && numValue >= min && numValue <= max) {
           onChange(numValue)
         }
       }
@@ -37,8 +37,8 @@ export const StatInput = ({ value, onChange, min, max }: StatInputProps) => {
   const handleBlur = () => {
     setIsFocused(false)
     
-    const numValue = parseInt(inputValue, 10)
-    if (isNaN(numValue) || inputValue === '') {
+    const numValue = Number.parseInt(inputValue, 10)
+    if (Number.isNaN(numValue) || inputValue === '') {
       setInputValue(value.toString())
     } else if (numValue < min) {
       onChange(min)
