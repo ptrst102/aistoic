@@ -1,6 +1,6 @@
 import type { Thunder, Metagross } from '@/types'
 import { calculateDamage, calculateStats } from '@/utils'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DEFAULT_EVS, DEFAULT_IVS } from '@/constants'
 
 interface DamageCalculationProps {

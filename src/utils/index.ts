@@ -7,7 +7,7 @@ export {
 } from './damage'
 
 // ステータス計算関連
-export { calculateStats, calculateTotalEVs, isValidEVs } from './stats'
+export { calculateStats, calculateTotalEVs } from './stats'
 
 // バトルシミュレーション関連
 export { simulateBattle } from './battle'

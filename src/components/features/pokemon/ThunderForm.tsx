@@ -1,13 +1,13 @@
 import { THUNDER_ITEMS, STAT_LABELS, STAT_KEYS } from '@/constants'
 import type { EVs, IVs, Nature, ThunderItem } from '@/types'
 import { calculateStats, calculateTotalEVs, getStatRange } from '@/utils'
-import { Button } from './ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
-import { Label } from './ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
-import { Slider } from './ui/slider'
-import { StatInput } from './common/StatInput'
-import { NatureSelectWithGroups } from './common/NatureSelectWithGroups'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
+import { StatInput } from '@/components/common/StatInput'
+import { NatureSelectWithGroups } from '@/components/common/NatureSelectWithGroups'
 
 interface ThunderFormProps {
   nature: Nature

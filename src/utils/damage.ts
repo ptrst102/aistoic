@@ -11,7 +11,8 @@ export const calculateModifiers = (
   moveCategory: 'physical' | 'special',
 ) => {
   const stab = ('electricMove' in attacker && moveType === 'electric') ? 1.5 : 1.0
-  const typeEffectiveness = (moveType === 'rock' && 'electricMove' in defender) ? 2.0 : 1.0
+  // いわなだれ→サンダーは2倍、それ以外は等倍（固定）
+  const typeEffectiveness = moveType === 'rock' ? 2.0 : 1.0
   const itemBonus = (() => {
     if (attacker.item === 'じしゃく' && moveType === 'electric') return 1.1
     if (attacker.item === 'かたいいし' && moveType === 'rock') return 1.1

@@ -2,8 +2,8 @@ import { METAGROSS_ITEMS } from '@/constants'
 import type { MetagrossItem, MetagrossPreset } from '@/types'
 import { getItemDescription, getWinRateColorClass } from '@/utils'
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface WinRateTableProps {
   winRates: Record<MetagrossPreset, Record<MetagrossItem, number>> | null
