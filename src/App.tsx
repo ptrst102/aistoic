@@ -19,7 +19,7 @@ const App = () => {
     spAttack: 252,
     speed: 4,
   })
-  const [thunderItem, setThunderItem] = useState<ThunderItem>('じしゃく')
+  const [thunderItem, setThunderItem] = useState<ThunderItem>('もちものなし')
   const [electricMove, setElectricMove] = useState<'10まんボルト' | 'かみなり'>('10まんボルト')
   
   // メタグロスの状態管理
