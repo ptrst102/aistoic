@@ -1,4 +1,4 @@
-import { DEFAULT_EVS, DEFAULT_IVS, NATURE_LIST, THUNDER_ITEMS } from '@/constants'
+import { DEFAULT_EVS, DEFAULT_IVS, THUNDER_ITEMS } from '@/constants'
 import type { EVs, IVs, Nature, Thunder, ThunderItem } from '@/types'
 import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
 import { useState, useEffect } from 'react'
@@ -8,6 +8,7 @@ import { Label } from './ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Slider } from './ui/slider'
 import { StatInput } from './common/StatInput'
+import { NatureSelectWithGroups } from './common/NatureSelectWithGroups'
 
 interface ThunderFormProps {
   onSubmit: (thunder: Thunder) => void
@@ -70,18 +71,11 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
         {/* 性格選択 */}
         <div className="space-y-2">
           <Label htmlFor="nature">性格</Label>
-          <Select value={nature} onValueChange={(value) => setNature(value as Nature)}>
-            <SelectTrigger id="nature">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {NATURE_LIST.map((n) => (
-                <SelectItem key={n} value={n}>
-                  {n}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <NatureSelectWithGroups
+            value={nature}
+            onValueChange={setNature}
+            id="nature"
+          />
         </div>
 
         {/* ステータス設定 */}

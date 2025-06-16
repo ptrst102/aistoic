@@ -1,4 +1,4 @@
-import { DEFAULT_EVS, DEFAULT_IVS, NATURE_LIST } from '@/constants'
+import { DEFAULT_EVS, DEFAULT_IVS } from '@/constants'
 import type { EVs, IVs, Metagross, Nature, Thunder } from '@/types'
 import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
 import { useState, useEffect } from 'react'
@@ -8,6 +8,7 @@ import { Label } from './ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Slider } from './ui/slider'
 import { StatInput } from './common/StatInput'
+import { NatureSelectWithGroups } from './common/NatureSelectWithGroups'
 
 interface CustomMetagrossFormProps {
   onSubmit: (metagross: Metagross) => void
@@ -71,18 +72,11 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
             {/* 性格選択 */}
             <div className="space-y-2">
               <Label htmlFor="metagross-nature">性格</Label>
-              <Select value={nature} onValueChange={(value) => setNature(value as Nature)}>
-                <SelectTrigger id="metagross-nature">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {NATURE_LIST.map((n) => (
-                    <SelectItem key={n} value={n}>
-                      {n}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <NatureSelectWithGroups
+                value={nature}
+                onValueChange={setNature}
+                id="metagross-nature"
+              />
             </div>
 
             {/* ステータス設定 */}

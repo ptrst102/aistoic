@@ -54,7 +54,7 @@ export const checkAllEvWaste = (
 ): Record<keyof EVs, number | null> => {
   const stats = ['hp', 'attack', 'defense', 'spAttack', 'spDefense', 'speed'] as const
   
-  const result: Record<keyof EVs, number | null> = {}
+  const result = {} as Record<keyof EVs, number | null>
   
   for (const stat of stats) {
     result[stat] = getOptimalEv(species, level, nature, ivs, evs, stat)

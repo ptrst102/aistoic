@@ -52,7 +52,7 @@ describe('damage utils', () => {
     })
 
     it('持ち物補正なしの場合の計算', () => {
-      const thunderNoItem = { ...mockThunder, item: 'なし' as const }
+      const thunderNoItem = { ...mockThunder, item: 'もちものなし' as const }
       const modifier = calculateModifiers(thunderNoItem, mockMetagross, 'electric', 'special')
       // タイプ一致 1.5 のみ
       expect(modifier).toBe(1.5)
@@ -130,7 +130,7 @@ describe('damage utils', () => {
     it('最低でも1ダメージを与える', () => {
       const weakThunder = {
         ...mockThunder,
-        stats: { ...mockThunder.stats, spAttack: 1 },
+        stats: { ...mockThunder.stats!, spAttack: 1 },
       }
       
       const damage = calculateDamage(

@@ -11,6 +11,11 @@ import { executeThunderTurn, executeMetagrossTurn } from './damagePhase'
 export interface BattleResult {
   winner: 'thunder' | 'metagross'
   turns: number
+  winReason?: 'damage' | 'struggle' | 'other'
+  thunderFlinched?: boolean
+  metagrossFlinched?: boolean
+  thunderParalyzed?: boolean
+  metagrossParalyzed?: boolean
 }
 
 /**
@@ -118,6 +123,13 @@ export const simulateBattle = (
   let state = initializeBattleState(thunder, metagross)
   let turns = 0
   const maxTurns = 100 // 無限ループ防止
+  
+  // 詳細情報の記録
+  let thunderEverFlinched = false
+  let metagrossEverFlinched = false
+  let thunderEverParalyzed = false
+  let metagrossEverParalyzed = false
+  let winReason: 'damage' | 'struggle' | 'other' = 'damage'
 
   while (turns < maxTurns) {
     turns++
@@ -165,6 +177,7 @@ export const simulateBattle = (
           ...state,
           metagross: applyStatusCondition(state.metagross, 'paralysis')
         }
+        metagrossEverParalyzed = true
         
         // ラムのみの即時発動チェック（麻痺になった直後）
         if (metagross.item === 'ラムのみ' && !state.metagross.hasUsedLumBerry && state.metagross.status === 'paralysis') {
@@ -250,6 +263,7 @@ export const simulateBattle = (
       // ひるみ判定（メタグロスが先制した場合のみ）
       if (metagrossResult.damage > 0 && checkFlinch(30)) {
         thunderFlinched = true
+        thunderEverFlinched = true
       }
 
       // サンダーの攻撃（ひるまず、まだ生きている場合）
@@ -286,6 +300,7 @@ export const simulateBattle = (
           ...state,
           metagross: applyStatusCondition(state.metagross, 'paralysis')
         }
+        metagrossEverParalyzed = true
         
         // ラムのみの即時発動チェック（麻痺になった直後）
         if (metagross.item === 'ラムのみ' && !state.metagross.hasUsedLumBerry && state.metagross.status === 'paralysis') {
@@ -307,12 +322,37 @@ export const simulateBattle = (
     // 勝敗判定
     const winner = checkBattleEnd(state)
     if (winner) {
-      return { winner, turns }
+      return {
+        winner,
+        turns,
+        winReason,
+        thunderFlinched: thunderEverFlinched,
+        metagrossFlinched: metagrossEverFlinched,
+        thunderParalyzed: thunderEverParalyzed,
+        metagrossParalyzed: metagrossEverParalyzed,
+      }
     }
   }
 
   // タイムアウト（わるあがきで決着をつける）
+  winReason = 'struggle'
   return state.thunder.currentHP > state.metagross.currentHP 
-    ? { winner: 'thunder', turns }
-    : { winner: 'metagross', turns }
+    ? {
+        winner: 'thunder',
+        turns,
+        winReason,
+        thunderFlinched: thunderEverFlinched,
+        metagrossFlinched: metagrossEverFlinched,
+        thunderParalyzed: thunderEverParalyzed,
+        metagrossParalyzed: metagrossEverParalyzed,
+      }
+    : {
+        winner: 'metagross',
+        turns,
+        winReason,
+        thunderFlinched: thunderEverFlinched,
+        metagrossFlinched: metagrossEverFlinched,
+        thunderParalyzed: thunderEverParalyzed,
+        metagrossParalyzed: metagrossEverParalyzed,
+      }
 }

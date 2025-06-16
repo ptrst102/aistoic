@@ -43,10 +43,10 @@ export const calculateWinRate = (
 export const calculateWinRatesAgainstAllPresets = (
   thunder: Thunder,
 ): Record<MetagrossPreset, Record<MetagrossItem, number>> => {
-  const results: Record<MetagrossPreset, Record<MetagrossItem, number>> = {}
+  const results = {} as Record<MetagrossPreset, Record<MetagrossItem, number>>
   
   for (const [presetName, preset] of Object.entries(METAGROSS_PRESETS)) {
-    const itemResults: Record<MetagrossItem, number> = {}
+    const itemResults = {} as Record<MetagrossItem, number>
     
     for (const item of METAGROSS_ITEMS) {
       const metagross: Metagross = {
@@ -85,7 +85,7 @@ export const calculateWinRateAgainstCustom = (
   thunder: Thunder,
   customMetagross: Omit<Metagross, 'item'>,
 ): Record<MetagrossItem, number> => {
-  const results: Record<MetagrossItem, number> = {}
+  const results = {} as Record<MetagrossItem, number>
   
   for (const item of METAGROSS_ITEMS) {
     const metagrossWithItem: Metagross = {
