@@ -9,7 +9,6 @@ const App = () => {
   const [winRates, setWinRates] = useState<Record<MetagrossPreset, Record<MetagrossItem, number>> | null>(null)
   const [customWinRates, setCustomWinRates] = useState<Record<MetagrossItem, number> | null>(null)
   const [isCalculating, setIsCalculating] = useState(false)
-  const [canCalculate, setCanCalculate] = useState(false)
   
   // ダメージ計算用のstate
   const [displayThunder, setDisplayThunder] = useState<Thunder | null>(null)
@@ -45,10 +44,6 @@ const App = () => {
     }, 100)
   }
   
-  const handleFormChange = () => {
-    // フォームの値が変更されたら計算ボタンを有効化
-    setCanCalculate(true)
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -66,9 +61,9 @@ const App = () => {
       <main className="container mx-auto px-4 py-8 space-y-8">
         {/* 上部: 入力フォーム（2列） */}
         <div className="grid lg:grid-cols-2 gap-6">
-          <ThunderForm ref={thunderFormRef} onChange={handleFormChange} />
+          <ThunderForm ref={thunderFormRef} />
           <div className="space-y-6">
-            <CustomMetagrossForm ref={customMetagrossFormRef} onChange={handleFormChange} />
+            <CustomMetagrossForm ref={customMetagrossFormRef} />
             <DamageCalculation thunder={displayThunder} metagross={displayMetagross} />
           </div>
         </div>
@@ -77,7 +72,7 @@ const App = () => {
         <div className="flex justify-center">
           <Button 
             onClick={handleCalculate} 
-            disabled={!canCalculate || isCalculating}
+            disabled={isCalculating}
             size="lg"
             className="w-full max-w-md"
           >

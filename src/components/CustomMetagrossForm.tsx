@@ -13,12 +13,9 @@ export interface CustomMetagrossFormRef {
   getMetagross: () => Metagross
 }
 
-interface CustomMetagrossFormProps {
-  onChange?: () => void // 値が変更されたときのコールバック（オプショナル）
-}
 
-export const CustomMetagrossForm = forwardRef<CustomMetagrossFormRef, CustomMetagrossFormProps>(
-  ({ onChange }, ref) => {
+export const CustomMetagrossForm = forwardRef<CustomMetagrossFormRef>(
+  (_, ref) => {
   const [nature, setNature] = useState<Nature>('いじっぱり')
   const [ivs, setIvs] = useState<IVs>(DEFAULT_IVS)
   const [evs, setEvs] = useState<EVs>({
@@ -72,8 +69,7 @@ export const CustomMetagrossForm = forwardRef<CustomMetagrossFormRef, CustomMeta
                 value={nature}
                 onValueChange={(value) => {
                   setNature(value)
-                  onChange?.()
-                }}
+                                  }}
                 id="metagross-nature"
               />
             </div>
@@ -127,8 +123,7 @@ export const CustomMetagrossForm = forwardRef<CustomMetagrossFormRef, CustomMeta
                               onChange={(e) => {
                                 const newValue = Math.max(0, Math.min(31, Number.parseInt(e.target.value) || 0))
                                 setIvs({ ...ivs, [stat]: newValue })
-                                onChange?.()
-                              }}
+                                                              }}
                               className="w-14 px-2 py-1 text-sm border rounded"
                               min={0}
                               max={31}
@@ -138,8 +133,7 @@ export const CustomMetagrossForm = forwardRef<CustomMetagrossFormRef, CustomMeta
                               variant="outline"
                               onClick={() => {
                                 setIvs({ ...ivs, [stat]: 31 })
-                                onChange?.()
-                              }}
+                                                              }}
                               className="h-7 px-2 text-xs"
                             >
                               V
@@ -149,8 +143,7 @@ export const CustomMetagrossForm = forwardRef<CustomMetagrossFormRef, CustomMeta
                               variant="outline"
                               onClick={() => {
                                 setIvs({ ...ivs, [stat]: 0 })
-                                onChange?.()
-                              }}
+                                                              }}
                               className="h-7 px-2 text-xs"
                             >
                               U
@@ -186,8 +179,7 @@ export const CustomMetagrossForm = forwardRef<CustomMetagrossFormRef, CustomMeta
                               variant="outline"
                               onClick={() => {
                                 updateEv(stat, 252)
-                                onChange?.()
-                              }}
+                                                              }}
                               className="h-7 px-2 text-xs"
                             >
                               252
@@ -197,8 +189,7 @@ export const CustomMetagrossForm = forwardRef<CustomMetagrossFormRef, CustomMeta
                               variant="outline"
                               onClick={() => {
                                 updateEv(stat, 0)
-                                onChange?.()
-                              }}
+                                                              }}
                               className="h-7 px-2 text-xs"
                             >
                               0
@@ -211,8 +202,7 @@ export const CustomMetagrossForm = forwardRef<CustomMetagrossFormRef, CustomMeta
                         value={[evs[stat]]}
                         onValueChange={(values) => {
                           updateEv(stat, values[0])
-                          onChange?.()
-                        }}
+                                                  }}
                         max={252}
                         step={4}
                         className={`w-full ${hasWaste ? '[&_[role=slider]]:bg-orange-500' : ''}`}
