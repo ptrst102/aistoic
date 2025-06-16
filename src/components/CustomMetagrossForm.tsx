@@ -1,7 +1,7 @@
 import { DEFAULT_EVS, DEFAULT_IVS } from '@/constants'
 import type { EVs, IVs, Metagross, Nature, Thunder } from '@/types'
-import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
-import { useState, useEffect } from 'react'
+import { calculateStats, calculateTotalEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Label } from './ui/label'
@@ -33,31 +33,40 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
   const updateEv = (stat: keyof EVs, value: number) => {
     const newEvs = { ...evs, [stat]: value }
     setEvs(newEvs)
-  }
-
-  const maxEvForStat = (stat: keyof EVs) => {
-    return 252
-  }
-
-  const handleSubmit = () => {
-    // 持ち物は呼び出し側で各種類試すので、ここでは基本情報のみ渡す
-    const metagross: Omit<Metagross, 'item'> = {
+    // 値が変更されたら直接onSubmitを呼ぶ
+    const metagross: Metagross = {
       species: 'メタグロス',
       level: 50,
       nature,
       ivs,
-      evs,
-      stats: calculateStats('メタグロス', 50, nature, ivs, evs),
+      evs: newEvs,
+      stats: calculateStats('メタグロス', 50, nature, ivs, newEvs),
+      item: 'もちものなし', // 呼び出し側で各種類試すので、ここではデフォルト値
     }
-    onSubmit(metagross as Metagross)
+    onSubmit(metagross)
   }
+
 
   const stats = calculateStats('メタグロス', 50, nature, ivs, evs)
 
-  // メタグロスの情報が変更されたら自動的にonSubmitを呼ぶ
+  // 性格、個体値、努力値が変更されたときにonSubmitを呼ぶヘルパー関数
+  const submitMetagross = useCallback((newNature: Nature = nature, newIvs: IVs = ivs, newEvs: EVs = evs) => {
+    const metagross: Metagross = {
+      species: 'メタグロス',
+      level: 50,
+      nature: newNature,
+      ivs: newIvs,
+      evs: newEvs,
+      stats: calculateStats('メタグロス', 50, newNature, newIvs, newEvs),
+      item: 'もちものなし', // 呼び出し側で各種類試すので、ここではデフォルト値
+    }
+    onSubmit(metagross)
+  }, [onSubmit, nature, ivs, evs])
+
+  // 初回レンダリング時に初期値でonSubmitを呼ぶ
   useEffect(() => {
-    handleSubmit()
-  }, [nature, ivs, evs])
+    submitMetagross()
+  }, [submitMetagross])
 
 
   return (
@@ -74,7 +83,10 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
               <Label htmlFor="metagross-nature">性格</Label>
               <NatureSelectWithGroups
                 value={nature}
-                onValueChange={setNature}
+                onValueChange={(value) => {
+                  setNature(value)
+                  submitMetagross(value, ivs, evs)
+                }}
                 id="metagross-nature"
               />
             </div>
@@ -135,7 +147,9 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                               value={ivs[stat]}
                               onChange={(e) => {
                                 const newValue = Math.max(0, Math.min(31, Number.parseInt(e.target.value) || 0))
-                                setIvs({ ...ivs, [stat]: newValue })
+                                const newIvs = { ...ivs, [stat]: newValue }
+                                setIvs(newIvs)
+                                submitMetagross(nature, newIvs, evs)
                               }}
                               className="w-14 px-2 py-1 text-sm border rounded"
                               min={0}
@@ -144,7 +158,11 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => setIvs({ ...ivs, [stat]: 31 })}
+                              onClick={() => {
+                                const newIvs = { ...ivs, [stat]: 31 }
+                                setIvs(newIvs)
+                                submitMetagross(nature, newIvs, evs)
+                              }}
                               className="h-7 px-2 text-xs"
                             >
                               V
@@ -152,7 +170,11 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => setIvs({ ...ivs, [stat]: 0 })}
+                              onClick={() => {
+                                const newIvs = { ...ivs, [stat]: 0 }
+                                setIvs(newIvs)
+                                submitMetagross(nature, newIvs, evs)
+                              }}
                               className="h-7 px-2 text-xs"
                             >
                               U
@@ -186,7 +208,9 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => updateEv(stat, 252)}
+                              onClick={() => {
+                                updateEv(stat, 252)
+                              }}
                               className="h-7 px-2 text-xs"
                             >
                               252
@@ -194,7 +218,9 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => updateEv(stat, 0)}
+                              onClick={() => {
+                                updateEv(stat, 0)
+                              }}
                               className="h-7 px-2 text-xs"
                             >
                               0
@@ -205,7 +231,9 @@ export const CustomMetagrossForm = ({ onSubmit }: CustomMetagrossFormProps) => {
 
                       <Slider
                         value={[evs[stat]]}
-                        onValueChange={(values) => updateEv(stat, values[0])}
+                        onValueChange={(values) => {
+                          updateEv(stat, values[0])
+                        }}
                         max={252}
                         step={4}
                         className={`w-full ${hasWaste ? '[&_[role=slider]]:bg-orange-500' : ''}`}

@@ -1,7 +1,7 @@
 import { DEFAULT_EVS, DEFAULT_IVS, THUNDER_ITEMS } from '@/constants'
 import type { EVs, IVs, Nature, Thunder, ThunderItem } from '@/types'
-import { calculateStats, calculateTotalEVs, isValidEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
-import { useState, useEffect } from 'react'
+import { calculateStats, calculateTotalEVs, getOptimalEv, calculateEvFromStat, getStatRange } from '@/utils'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Label } from './ui/label'
@@ -32,30 +32,44 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
   const updateEv = (stat: keyof EVs, value: number) => {
     const newEvs = { ...evs, [stat]: value }
     setEvs(newEvs)
-  }
-
-  const maxEvForStat = (stat: keyof EVs) => {
-    return 252
-  }
-
-  // 外部からサンダーの情報を取得するメソッド
-  const getThunder = (): Thunder => {
-    return {
+    // 値が変更されたら直接onSubmitを呼ぶ
+    onSubmit({
       species: 'サンダー',
       level: 50,
       nature,
       ivs,
-      evs,
+      evs: newEvs,
       item,
       electricMove,
-      stats: calculateStats('サンダー', 50, nature, ivs, evs),
-    }
+      stats: calculateStats('サンダー', 50, nature, ivs, newEvs),
+    })
   }
 
-  // フォームの値が変更されたら自動的にonSubmitを呼ぶ
+
+  // 値が変更されたときにonSubmitを呼ぶヘルパー関数
+  const submitThunder = useCallback((
+    newNature: Nature = nature,
+    newIvs: IVs = ivs,
+    newEvs: EVs = evs,
+    newItem: ThunderItem = item,
+    newElectricMove: '10まんボルト' | 'かみなり' = electricMove
+  ) => {
+    onSubmit({
+      species: 'サンダー',
+      level: 50,
+      nature: newNature,
+      ivs: newIvs,
+      evs: newEvs,
+      item: newItem,
+      electricMove: newElectricMove,
+      stats: calculateStats('サンダー', 50, newNature, newIvs, newEvs),
+    })
+  }, [onSubmit, nature, ivs, evs, item, electricMove])
+
+  // 初回レンダリング時に初期値でonSubmitを呼ぶ
   useEffect(() => {
-    onSubmit(getThunder())
-  }, [nature, ivs, evs, item, electricMove])
+    submitThunder()
+  }, [submitThunder])
 
   const stats = calculateStats('サンダー', 50, nature, ivs, evs)
 
@@ -73,7 +87,10 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
           <Label htmlFor="nature">性格</Label>
           <NatureSelectWithGroups
             value={nature}
-            onValueChange={setNature}
+            onValueChange={(value) => {
+              setNature(value)
+              submitThunder(value, ivs, evs, item, electricMove)
+            }}
             id="nature"
           />
         </div>
@@ -134,7 +151,9 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
                           value={ivs[stat]}
                           onChange={(e) => {
                             const newValue = Math.max(0, Math.min(31, Number.parseInt(e.target.value) || 0))
-                            setIvs({ ...ivs, [stat]: newValue })
+                            const newIvs = { ...ivs, [stat]: newValue }
+                            setIvs(newIvs)
+                            submitThunder(nature, newIvs, evs, item, electricMove)
                           }}
                           className="w-14 px-2 py-1 text-sm border rounded"
                           min={0}
@@ -143,7 +162,11 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setIvs({ ...ivs, [stat]: 31 })}
+                          onClick={() => {
+                            const newIvs = { ...ivs, [stat]: 31 }
+                            setIvs(newIvs)
+                            submitThunder(nature, newIvs, evs, item, electricMove)
+                          }}
                           className="h-7 px-2 text-xs"
                         >
                           V
@@ -151,7 +174,11 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setIvs({ ...ivs, [stat]: 0 })}
+                          onClick={() => {
+                            const newIvs = { ...ivs, [stat]: 0 }
+                            setIvs(newIvs)
+                            submitThunder(nature, newIvs, evs, item, electricMove)
+                          }}
                           className="h-7 px-2 text-xs"
                         >
                           U
@@ -185,7 +212,9 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => updateEv(stat, 252)}
+                          onClick={() => {
+                            updateEv(stat, 252)
+                          }}
                           className="h-7 px-2 text-xs"
                         >
                           252
@@ -193,7 +222,9 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => updateEv(stat, 0)}
+                          onClick={() => {
+                            updateEv(stat, 0)
+                          }}
                           className="h-7 px-2 text-xs"
                         >
                           0
@@ -204,7 +235,9 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
 
                   <Slider
                     value={[evs[stat]]}
-                    onValueChange={(values) => updateEv(stat, values[0])}
+                    onValueChange={(values) => {
+                      updateEv(stat, values[0])
+                    }}
                     max={252}
                     step={4}
                     className={`w-full ${hasWaste ? '[&_[role=slider]]:bg-orange-500' : ''}`}
@@ -220,7 +253,11 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
           <Label htmlFor="electric-move">使用する電気技</Label>
           <Select 
             value={electricMove} 
-            onValueChange={(value) => setElectricMove(value as '10まんボルト' | 'かみなり')}
+            onValueChange={(value) => {
+              const newMove = value as '10まんボルト' | 'かみなり'
+              setElectricMove(newMove)
+              submitThunder(nature, ivs, evs, item, newMove)
+            }}
           >
             <SelectTrigger id="electric-move">
               <SelectValue />
@@ -239,7 +276,11 @@ export const ThunderForm = ({ onSubmit }: ThunderFormProps) => {
         {/* 持ち物選択 */}
         <div className="space-y-2">
           <Label htmlFor="item">持ち物</Label>
-          <Select value={item} onValueChange={(value) => setItem(value as ThunderItem)}>
+          <Select value={item} onValueChange={(value) => {
+            const newItem = value as ThunderItem
+            setItem(newItem)
+            submitThunder(nature, ivs, evs, newItem, electricMove)
+          }}>
             <SelectTrigger id="item">
               <SelectValue />
             </SelectTrigger>
