@@ -9,13 +9,6 @@
 - モンテカルロシミュレーション（10,000 回）による正確な勝率計算
 - 第三世代の仕様に準拠したダメージ計算
 
-## 技術スタック
-
-- React 19 + TypeScript 5
-- Vite 6 + @tailwindcss/vite
-- Vitest + @testing-library/react
-- GitHub Pages（デプロイ先）
-
 ## セットアップ
 
 ```bash
@@ -25,31 +18,9 @@ npm install
 # 開発サーバーの起動
 npm run dev
 
-# ビルド
-npm run build
-
-# テストの実行
-npm run test
+# lint
+npm run lint
 
 # コードフォーマット
 npm run format
 ```
-
-## プロジェクト構成
-
-```
-src/
-├── components/     # UIコンポーネント
-├── hooks/         # カスタムフック
-├── utils/         # ユーティリティ関数（ダメージ計算など）
-├── types/         # 型定義
-├── constants/     # 定数定義（ポケモンのステータスなど）
-└── test/          # テスト関連
-```
-
-## 開発ガイドライン
-
-- TypeScript の`any`型は使用禁止
-- 関数は`const fn = () => {}`形式で定義
-- インポートは`@/`エイリアスを使用
-- コードフォーマットは Prettier で自動化
