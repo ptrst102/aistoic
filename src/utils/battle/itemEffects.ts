@@ -9,7 +9,7 @@ export const checkSitrusBerry = (
   maxHP: number,
   hasUsed: boolean,
 ): { shouldActivate: boolean; newHP: number } => {
-  if (!hasUsed && currentHP <= maxHP / 2) {
+  if (!hasUsed && currentHP > 0 && currentHP <= maxHP / 2) {
     return {
       shouldActivate: true,
       newHP: Math.min(currentHP + 30, maxHP),

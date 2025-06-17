@@ -113,20 +113,6 @@ const processTurnStart = (
   };
 };
 
-/**
- * ターン終了時の処理
- */
-const processTurnEnd = (
-  state: BattleState,
-  thunder: Thunder,
-  metagross: Metagross,
-): BattleState => {
-  return {
-    ...state,
-    thunder: applyItemEffects(state.thunder, thunder),
-    metagross: applyItemEffects(state.metagross, metagross),
-  };
-};
 
 /**
  * 1対1のバトルをシミュレート
@@ -377,8 +363,6 @@ export const simulateBattle = (
       }
     }
 
-    // ターン終了時の処理
-    state = processTurnEnd(state, thunder, metagross);
 
     // 勝敗判定
     const winner = checkBattleEnd(state);
