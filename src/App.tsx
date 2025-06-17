@@ -117,9 +117,8 @@ const App = () => {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">
-            AIstoic - サンダー対メタグロス特化計算機
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">AIstoic</h1>
+          <p className=" text-gray-700">サンダー対メタグロス特化計算機</p>
         </div>
       </header>
 

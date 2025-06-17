@@ -67,7 +67,7 @@ export const CustomMetagrossForm = ({
         {/* 個体値 */}
         <div className="space-y-2">
           <Label>個体値</Label>
-          <div className="grid grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             {STAT_KEYS.map((stat) => (
               <div key={stat} className="space-y-1">
                 <div className="text-xs text-gray-600">{STAT_LABELS[stat]}</div>
@@ -131,19 +131,20 @@ export const CustomMetagrossForm = ({
               const currentStat = stats[stat];
               return (
                 <div key={stat} className="space-y-1">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <span className="text-sm font-medium">
                       {STAT_LABELS[stat]}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <StatInput
-                        value={evs[stat]}
-                        onChange={(newValue) => {
-                          updateEv(stat, newValue);
-                        }}
-                        min={0}
-                        max={252}
-                      />
+
+                    <StatInput
+                      value={evs[stat]}
+                      onChange={(newValue) => {
+                        updateEv(stat, newValue);
+                      }}
+                      min={0}
+                      max={252}
+                    />
+                    <div className="flex items-center gap-1">
                       <Button
                         type="button"
                         variant="outline"

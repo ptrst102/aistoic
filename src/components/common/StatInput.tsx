@@ -54,7 +54,7 @@ export const StatInput = ({ value, onChange, min, max }: StatInputProps) => {
   };
 
   return (
-    <div className="relative">
+    <div className="flex flex-col">
       <div className="text-2xl font-bold text-center mb-1">{value}</div>
       <Input
         ref={inputRef}
@@ -65,7 +65,7 @@ export const StatInput = ({ value, onChange, min, max }: StatInputProps) => {
         onChange={handleChange}
         onBlur={handleBlur}
         onFocus={handleFocus}
-        className="w-full text-center"
+        className="text-center"
       />
     </div>
   );
