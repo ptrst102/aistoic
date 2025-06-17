@@ -68,67 +68,80 @@ export const checkPinchBerry = (
 };
 
 /**
- * もちもの効果の適用
+ * オボンのみの即時処理（ダメージを受けた直後）
  * @param pokemonState ポケモンの戦闘状態
  * @param pokemon ポケモンデータ
  * @returns 更新後の戦闘状態
  */
-export const applyItemEffects = (
+export const applySitrusBerryImmediate = (
   pokemonState: PokemonBattleState,
   pokemon: Thunder | Metagross,
 ): PokemonBattleState => {
-  let updatedState = { ...pokemonState };
-
-  // オボンのみ
-  if (pokemon.item === "オボンのみ") {
-    const sitrus = checkSitrusBerry(
-      updatedState.currentHP,
-      updatedState.maxHP,
-      updatedState.hasUsedSitrusBerry,
-    );
-    if (sitrus.shouldActivate) {
-      updatedState = {
-        ...updatedState,
-        currentHP: sitrus.newHP,
+  if (pokemon.item === "オボンのみ" && !pokemonState.hasUsedSitrusBerry) {
+    const afterDamageHP = pokemonState.currentHP;
+    const maxHP = pokemonState.maxHP;
+    if (afterDamageHP > 0 && afterDamageHP <= maxHP / 2) {
+      return {
+        ...pokemonState,
+        currentHP: Math.min(afterDamageHP + 30, maxHP),
         hasUsedSitrusBerry: true,
       };
     }
   }
+  return pokemonState;
+};
 
-  // ラムのみ
-  if (pokemon.item === "ラムのみ") {
-    const lum = checkLumBerry(
-      updatedState.status,
-      updatedState.hasUsedLumBerry,
-    );
-    if (lum.shouldActivate) {
-      updatedState = {
-        ...updatedState,
-        status: lum.newStatus,
-        hasUsedLumBerry: true,
-      };
-    }
+/**
+ * ラムのみの即時処理（状態異常になった直後）
+ * @param pokemonState ポケモンの戦闘状態
+ * @param pokemon ポケモンデータ
+ * @returns 更新後の戦闘状態
+ */
+export const applyLumBerryImmediate = (
+  pokemonState: PokemonBattleState,
+  pokemon: Thunder | Metagross,
+): PokemonBattleState => {
+  if (
+    pokemon.item === "ラムのみ" &&
+    !pokemonState.hasUsedLumBerry &&
+    pokemonState.status === "paralysis"
+  ) {
+    return {
+      ...pokemonState,
+      status: "none",
+      hasUsedLumBerry: true,
+    };
   }
+  return pokemonState;
+};
 
-  // ピンチきのみ
+/**
+ * ピンチきのみの効果を適用（ターン終了時）
+ * @param pokemonState ポケモンの戦闘状態
+ * @param pokemon ポケモンデータ
+ * @returns 更新後の戦闘状態
+ */
+export const applyPinchBerryEffect = (
+  pokemonState: PokemonBattleState,
+  pokemon: Thunder | Metagross,
+): PokemonBattleState => {
   const pinch = checkPinchBerry(
-    updatedState.currentHP,
-    updatedState.maxHP,
+    pokemonState.currentHP,
+    pokemonState.maxHP,
     pokemon.item,
-    updatedState.hasUsedPinchBerry,
+    pokemonState.hasUsedPinchBerry,
   );
+
   if (pinch.shouldActivate && pinch.stat) {
-    updatedState = {
-      ...updatedState,
+    return {
+      ...pokemonState,
       hasUsedPinchBerry: true,
       statBoosts: {
-        ...updatedState.statBoosts,
+        ...pokemonState.statBoosts,
         [pinch.stat]: 1,
       },
     };
   }
 
-  // たべのこしはターン開始時に処理するため、ここでは処理しない
-
-  return updatedState;
+  return pokemonState;
 };

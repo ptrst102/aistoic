@@ -10,7 +10,7 @@ export {
 export { calculateStats, calculateTotalEVs } from "./stats";
 
 // バトルシミュレーション関連
-export { simulateBattle } from "./battle";
+export { simulateBattle } from "./battle/index";
 
 // モンテカルロシミュレーション関連
 export {
@@ -30,6 +30,3 @@ export {
 
 // 努力値計算関連
 export { calculateEvFromStat, getStatRange } from "./evCalculation";
-
-// バトル分析関連
-export { analyzeBattle } from "./battleAnalysis";

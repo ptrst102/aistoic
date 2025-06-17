@@ -6,7 +6,11 @@ import {
   updateSleepTurns,
   applyStatusCondition,
 } from "./statusEffects";
-import { applyItemEffects } from "./itemEffects";
+import {
+  applyPinchBerryEffect,
+  applySitrusBerryImmediate,
+  applyLumBerryImmediate,
+} from "./itemEffects";
 import { executeThunderTurn, executeMetagrossTurn } from "./damagePhase";
 
 /**
@@ -113,7 +117,6 @@ const processTurnStart = (
   };
 };
 
-
 /**
  * 1対1のバトルをシミュレート
  */
@@ -165,23 +168,10 @@ export const simulateBattle = (
       };
 
       // オボンのみの即時発動チェック（ダメージを受けた直後）
-      if (
-        metagross.item === "オボンのみ" &&
-        !state.metagross.hasUsedSitrusBerry
-      ) {
-        const afterDamageHP = state.metagross.currentHP;
-        const maxHP = state.metagross.maxHP;
-        if (afterDamageHP > 0 && afterDamageHP <= maxHP / 2) {
-          state = {
-            ...state,
-            metagross: {
-              ...state.metagross,
-              currentHP: Math.min(afterDamageHP + 30, maxHP),
-              hasUsedSitrusBerry: true,
-            },
-          };
-        }
-      }
+      state = {
+        ...state,
+        metagross: applySitrusBerryImmediate(state.metagross, metagross),
+      };
 
       // 麻痺の付与
       if (thunderResult.causedParalysis) {
@@ -192,20 +182,10 @@ export const simulateBattle = (
         metagrossEverParalyzed = true;
 
         // ラムのみの即時発動チェック（麻痺になった直後）
-        if (
-          metagross.item === "ラムのみ" &&
-          !state.metagross.hasUsedLumBerry &&
-          state.metagross.status === "paralysis"
-        ) {
-          state = {
-            ...state,
-            metagross: {
-              ...state.metagross,
-              status: "none",
-              hasUsedLumBerry: true,
-            },
-          };
-        }
+        state = {
+          ...state,
+          metagross: applyLumBerryImmediate(state.metagross, metagross),
+        };
       }
 
       // メタグロスが倒れたらバトル終了
@@ -235,20 +215,10 @@ export const simulateBattle = (
       };
 
       // オボンのみの即時発動チェック（ダメージを受けた直後）
-      if (thunder.item === "オボンのみ" && !state.thunder.hasUsedSitrusBerry) {
-        const afterDamageHP = state.thunder.currentHP;
-        const maxHP = state.thunder.maxHP;
-        if (afterDamageHP > 0 && afterDamageHP <= maxHP / 2) {
-          state = {
-            ...state,
-            thunder: {
-              ...state.thunder,
-              currentHP: Math.min(afterDamageHP + 30, maxHP),
-              hasUsedSitrusBerry: true,
-            },
-          };
-        }
-      }
+      state = {
+        ...state,
+        thunder: applySitrusBerryImmediate(state.thunder, thunder),
+      };
     } else {
       // メタグロスが先制
       const metagrossResult = executeMetagrossTurn(
@@ -271,20 +241,10 @@ export const simulateBattle = (
       };
 
       // オボンのみの即時発動チェック（ダメージを受けた直後）
-      if (thunder.item === "オボンのみ" && !state.thunder.hasUsedSitrusBerry) {
-        const afterDamageHP = state.thunder.currentHP;
-        const maxHP = state.thunder.maxHP;
-        if (afterDamageHP > 0 && afterDamageHP <= maxHP / 2) {
-          state = {
-            ...state,
-            thunder: {
-              ...state.thunder,
-              currentHP: Math.min(afterDamageHP + 30, maxHP),
-              hasUsedSitrusBerry: true,
-            },
-          };
-        }
-      }
+      state = {
+        ...state,
+        thunder: applySitrusBerryImmediate(state.thunder, thunder),
+      };
 
       // サンダーが倒れたらバトル終了
       const winner = checkBattleEnd(state);
@@ -319,23 +279,10 @@ export const simulateBattle = (
       };
 
       // オボンのみの即時発動チェック（ダメージを受けた直後）
-      if (
-        metagross.item === "オボンのみ" &&
-        !state.metagross.hasUsedSitrusBerry
-      ) {
-        const afterDamageHP = state.metagross.currentHP;
-        const maxHP = state.metagross.maxHP;
-        if (afterDamageHP > 0 && afterDamageHP <= maxHP / 2) {
-          state = {
-            ...state,
-            metagross: {
-              ...state.metagross,
-              currentHP: Math.min(afterDamageHP + 30, maxHP),
-              hasUsedSitrusBerry: true,
-            },
-          };
-        }
-      }
+      state = {
+        ...state,
+        metagross: applySitrusBerryImmediate(state.metagross, metagross),
+      };
 
       // 麻痺の付与
       if (thunderResult.causedParalysis) {
@@ -346,23 +293,12 @@ export const simulateBattle = (
         metagrossEverParalyzed = true;
 
         // ラムのみの即時発動チェック（麻痺になった直後）
-        if (
-          metagross.item === "ラムのみ" &&
-          !state.metagross.hasUsedLumBerry &&
-          state.metagross.status === "paralysis"
-        ) {
-          state = {
-            ...state,
-            metagross: {
-              ...state.metagross,
-              status: "none",
-              hasUsedLumBerry: true,
-            },
-          };
-        }
+        state = {
+          ...state,
+          metagross: applyLumBerryImmediate(state.metagross, metagross),
+        };
       }
     }
-
 
     // 勝敗判定
     const winner = checkBattleEnd(state);
@@ -377,6 +313,13 @@ export const simulateBattle = (
         metagrossParalyzed: metagrossEverParalyzed,
       };
     }
+
+    // ターン終了時の処理（ピンチきのみの発動）
+    state = {
+      ...state,
+      thunder: applyPinchBerryEffect(state.thunder, thunder),
+      metagross: applyPinchBerryEffect(state.metagross, metagross),
+    };
   }
 
   // タイムアウト（わるあがきで決着をつける）
