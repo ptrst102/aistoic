@@ -1,5 +1,5 @@
-import type { StatusCondition, PokemonBattleState } from './battleState'
-import type { Thunder, Metagross } from '@/types'
+import type { StatusCondition, PokemonBattleState } from "./battleState";
+import type { Thunder, Metagross } from "@/types";
 
 /**
  * オボンのみの発動処理
@@ -13,10 +13,10 @@ export const checkSitrusBerry = (
     return {
       shouldActivate: true,
       newHP: Math.min(currentHP + 30, maxHP),
-    }
+    };
   }
-  return { shouldActivate: false, newHP: currentHP }
-}
+  return { shouldActivate: false, newHP: currentHP };
+};
 
 /**
  * ラムのみの発動処理
@@ -25,22 +25,22 @@ export const checkLumBerry = (
   status: StatusCondition,
   hasUsed: boolean,
 ): { shouldActivate: boolean; newStatus: StatusCondition } => {
-  if (!hasUsed && status === 'paralysis') {
+  if (!hasUsed && status === "paralysis") {
     return {
       shouldActivate: true,
-      newStatus: 'none',
-    }
+      newStatus: "none",
+    };
   }
-  return { shouldActivate: false, newStatus: status }
-}
+  return { shouldActivate: false, newStatus: status };
+};
 
 /**
  * たべのこしの回復処理
  */
 export const applyLeftovers = (currentHP: number, maxHP: number): number => {
-  const healAmount = Math.floor(maxHP / 16)
-  return Math.min(currentHP + healAmount, maxHP)
-}
+  const healAmount = Math.floor(maxHP / 16);
+  return Math.min(currentHP + healAmount, maxHP);
+};
 
 /**
  * ピンチきのみの発動処理
@@ -52,20 +52,20 @@ export const checkPinchBerry = (
   hasUsed: boolean,
 ): { shouldActivate: boolean; stat: string | null } => {
   if (hasUsed || currentHP > maxHP / 4) {
-    return { shouldActivate: false, stat: null }
+    return { shouldActivate: false, stat: null };
   }
 
   switch (item) {
-    case 'ヤタピのみ':
-      return { shouldActivate: true, stat: 'spAttack' }
-    case 'チイラのみ':
-      return { shouldActivate: true, stat: 'attack' }
-    case 'カムラのみ':
-      return { shouldActivate: true, stat: 'speed' }
+    case "ヤタピのみ":
+      return { shouldActivate: true, stat: "spAttack" };
+    case "チイラのみ":
+      return { shouldActivate: true, stat: "attack" };
+    case "カムラのみ":
+      return { shouldActivate: true, stat: "speed" };
     default:
-      return { shouldActivate: false, stat: null }
+      return { shouldActivate: false, stat: null };
   }
-}
+};
 
 /**
  * もちもの効果の適用
@@ -75,35 +75,38 @@ export const checkPinchBerry = (
  */
 export const applyItemEffects = (
   pokemonState: PokemonBattleState,
-  pokemon: Thunder | Metagross
+  pokemon: Thunder | Metagross,
 ): PokemonBattleState => {
-  let updatedState = { ...pokemonState }
+  let updatedState = { ...pokemonState };
 
   // オボンのみ
-  if (pokemon.item === 'オボンのみ') {
+  if (pokemon.item === "オボンのみ") {
     const sitrus = checkSitrusBerry(
       updatedState.currentHP,
       updatedState.maxHP,
-      updatedState.hasUsedSitrusBerry
-    )
+      updatedState.hasUsedSitrusBerry,
+    );
     if (sitrus.shouldActivate) {
       updatedState = {
         ...updatedState,
         currentHP: sitrus.newHP,
-        hasUsedSitrusBerry: true
-      }
+        hasUsedSitrusBerry: true,
+      };
     }
   }
 
   // ラムのみ
-  if (pokemon.item === 'ラムのみ') {
-    const lum = checkLumBerry(updatedState.status, updatedState.hasUsedLumBerry)
+  if (pokemon.item === "ラムのみ") {
+    const lum = checkLumBerry(
+      updatedState.status,
+      updatedState.hasUsedLumBerry,
+    );
     if (lum.shouldActivate) {
       updatedState = {
         ...updatedState,
         status: lum.newStatus,
-        hasUsedLumBerry: true
-      }
+        hasUsedLumBerry: true,
+      };
     }
   }
 
@@ -112,20 +115,20 @@ export const applyItemEffects = (
     updatedState.currentHP,
     updatedState.maxHP,
     pokemon.item,
-    updatedState.hasUsedPinchBerry
-  )
+    updatedState.hasUsedPinchBerry,
+  );
   if (pinch.shouldActivate && pinch.stat) {
     updatedState = {
       ...updatedState,
       hasUsedPinchBerry: true,
       statBoosts: {
         ...updatedState.statBoosts,
-        [pinch.stat]: 1
-      }
-    }
+        [pinch.stat]: 1,
+      },
+    };
   }
 
   // たべのこしはターン開始時に処理するため、ここでは処理しない
 
-  return updatedState
-}
+  return updatedState;
+};

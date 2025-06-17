@@ -1,18 +1,33 @@
-import { METAGROSS_ITEMS } from '@/constants'
-import type { MetagrossItem, MetagrossPreset } from '@/types'
-import { getItemDescription, getWinRateColorClass } from '@/utils'
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { METAGROSS_ITEMS } from "@/constants";
+import type { MetagrossItem, MetagrossPreset } from "@/types";
+import { getItemDescription, getWinRateColorClass } from "@/utils";
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface WinRateTableProps {
-  winRates: Record<MetagrossPreset, Record<MetagrossItem, number>> | null
-  customWinRates?: Record<MetagrossItem, number> | null
-  isCalculating?: boolean
+  winRates: Record<MetagrossPreset, Record<MetagrossItem, number>> | null;
+  customWinRates?: Record<MetagrossItem, number> | null;
+  isCalculating?: boolean;
 }
 
-export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }: WinRateTableProps) => {
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+export const WinRateTable = ({
+  winRates,
+  customWinRates,
+  isCalculating = false,
+}: WinRateTableProps) => {
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   if (isCalculating) {
     return (
@@ -29,7 +44,7 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (!winRates) {
@@ -37,16 +52,14 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
       <Card className="w-full">
         <CardHeader>
           <CardTitle>勝率計算結果</CardTitle>
-          <CardDescription>
-            サンダーの設定を入力して計算を実行してください
-          </CardDescription>
+          <CardDescription>計算を実行してください</CardDescription>
         </CardHeader>
       </Card>
-    )
+    );
   }
 
-  const presetOrder: MetagrossPreset[] = ['いじっぱりHA', 'いじっぱりAS']
-  const itemOrder = METAGROSS_ITEMS as readonly MetagrossItem[]
+  const presetOrder: MetagrossPreset[] = ["いじっぱりHA", "いじっぱりAS"];
+  const itemOrder = METAGROSS_ITEMS as readonly MetagrossItem[];
 
   return (
     <TooltipProvider>
@@ -54,7 +67,7 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
         <CardHeader>
           <CardTitle>勝率計算結果</CardTitle>
           <CardDescription>
-            各メタグロスに対するサンダーの勝率（%）
+            努力値配分、もちものごとのメタグロスに対するサンダーの勝率（%）
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -62,9 +75,11 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="text-left p-2 border-b">メタグロス</th>
+                  <th className="text-left p-2 border-b">
+                    努力値配分＼もちもの
+                  </th>
                   {itemOrder.map((item) => (
-                    <th 
+                    <th
                       key={item}
                       className="text-center p-2 border-b min-w-[80px]"
                       onMouseEnter={() => setHoveredItem(item)}
@@ -73,7 +88,7 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="text-xs cursor-help inline-block">
-                            {item === 'もちものなし' ? 'なし' : item}
+                            {item}
                           </div>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="z-50">
@@ -89,19 +104,21 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
                   <tr key={preset}>
                     <td className="p-2 border-b font-medium">{preset}</td>
                     {itemOrder.map((item) => {
-                      const winRate = winRates[preset][item]
+                      const winRate = winRates[preset][item];
                       return (
-                        <td 
-                          key={item} 
+                        <td
+                          key={item}
                           className={`text-center p-2 border-b ${
-                            hoveredItem === item ? 'bg-muted' : ''
+                            hoveredItem === item ? "bg-muted" : ""
                           }`}
                         >
-                          <div className={`rounded px-2 py-1 font-semibold ${getWinRateColorClass(winRate)}`}>
+                          <div
+                            className={`rounded px-2 py-1 font-semibold ${getWinRateColorClass(winRate)}`}
+                          >
                             {winRate.toFixed(1)}%
                           </div>
                         </td>
-                      )
+                      );
                     })}
                   </tr>
                 ))}
@@ -110,17 +127,19 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
                   <tr>
                     <td className="p-2 border-b font-medium">調整</td>
                     {itemOrder.map((item) => {
-                      const winRate = customWinRates[item]
+                      const winRate = customWinRates[item];
                       return (
-                        <td 
-                          key={item} 
-                          className={`text-center p-2 border-b ${hoveredItem === item ? 'bg-muted' : ''}`}
+                        <td
+                          key={item}
+                          className={`text-center p-2 border-b ${hoveredItem === item ? "bg-muted" : ""}`}
                         >
-                          <div className={`rounded px-2 py-1 font-semibold ${getWinRateColorClass(winRate)}`}>
+                          <div
+                            className={`rounded px-2 py-1 font-semibold ${getWinRateColorClass(winRate)}`}
+                          >
                             {winRate.toFixed(1)}%
                           </div>
                         </td>
-                      )
+                      );
                     })}
                   </tr>
                 )}
@@ -130,5 +149,5 @@ export const WinRateTable = ({ winRates, customWinRates, isCalculating = false }
         </CardContent>
       </Card>
     </TooltipProvider>
-  )
-}
+  );
+};

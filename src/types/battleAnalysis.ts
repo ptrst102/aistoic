@@ -3,40 +3,40 @@
  */
 export interface BattleAnalysis {
   /** 勝率（パーセンテージ） */
-  winRate: number
+  winRate: number;
   /** 平均ターン数 */
-  averageTurns: number
+  averageTurns: number;
   /** 最短ターン数 */
-  minTurns: number
+  minTurns: number;
   /** 最長ターン数 */
-  maxTurns: number
+  maxTurns: number;
   /** 勝因の内訳 */
   winReasons: {
     /** 通常の攻撃による勝利 */
-    byDamage: number
+    byDamage: number;
     /** わるあがきによる勝利 */
-    byStruggle: number
+    byStruggle: number;
     /** その他（相手の反動ダメージなど） */
-    byOther: number
-  }
+    byOther: number;
+  };
   /** 負け因の内訳 */
   lossReasons: {
     /** 通常の攻撃による敗北 */
-    byDamage: number
+    byDamage: number;
     /** わるあがきによる敗北 */
-    byStruggle: number
+    byStruggle: number;
     /** その他 */
-    byOther: number
-  }
+    byOther: number;
+  };
   /** 主要な行動パターン */
   actionPatterns: {
     /** サンダーがひるんだ回数の平均 */
-    thunderFlinchRate: number
+    thunderFlinchRate: number;
     /** メタグロスがひるんだ回数の平均 */
-    metagrossFlinchRate: number
+    metagrossFlinchRate: number;
     /** サンダーがまひした割合 */
-    thunderParalyzedRate: number
+    thunderParalyzedRate: number;
     /** メタグロスがまひした割合 */
-    metagrossParalyzedRate: number
-  }
+    metagrossParalyzedRate: number;
+  };
 }

@@ -1,79 +1,117 @@
-import { CustomMetagrossForm, ThunderForm, WinRateTable, HelpSection, DamageCalculation } from '@/components'
-import { Button } from '@/components/ui/button'
-import type { Metagross, MetagrossItem, MetagrossPreset, Thunder, Nature, IVs, EVs, ThunderItem } from '@/types'
-import { calculateWinRateAgainstCustom, calculateWinRatesAgainstAllPresets, calculateStats } from '@/utils'
-import { DEFAULT_EVS, DEFAULT_IVS } from '@/constants'
-import { useState } from 'react'
+import {
+  CustomMetagrossForm,
+  ThunderForm,
+  WinRateTable,
+  HelpSection,
+  DamageCalculation,
+} from "@/components";
+import { Button } from "@/components/ui/button";
+import type {
+  Metagross,
+  MetagrossItem,
+  MetagrossPreset,
+  Thunder,
+  Nature,
+  IVs,
+  EVs,
+  ThunderItem,
+} from "@/types";
+import {
+  calculateWinRateAgainstCustom,
+  calculateWinRatesAgainstAllPresets,
+  calculateStats,
+} from "@/utils";
+import { DEFAULT_EVS, DEFAULT_IVS } from "@/constants";
+import { useState } from "react";
 
 const App = () => {
-  const [winRates, setWinRates] = useState<Record<MetagrossPreset, Record<MetagrossItem, number>> | null>(null)
-  const [customWinRates, setCustomWinRates] = useState<Record<MetagrossItem, number> | null>(null)
-  const [isCalculating, setIsCalculating] = useState(false)
-  
+  const [winRates, setWinRates] = useState<Record<
+    MetagrossPreset,
+    Record<MetagrossItem, number>
+  > | null>(null);
+  const [customWinRates, setCustomWinRates] = useState<Record<
+    MetagrossItem,
+    number
+  > | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+
   // サンダーの状態管理
-  const [thunderNature, setThunderNature] = useState<Nature>('ひかえめ')
-  const [thunderIvs, setThunderIvs] = useState<IVs>(DEFAULT_IVS)
+  const [thunderNature, setThunderNature] = useState<Nature>("ひかえめ");
+  const [thunderIvs, setThunderIvs] = useState<IVs>(DEFAULT_IVS);
   const [thunderEvs, setThunderEvs] = useState<EVs>({
     ...DEFAULT_EVS,
     hp: 252,
     spAttack: 252,
     speed: 4,
-  })
-  const [thunderItem, setThunderItem] = useState<ThunderItem>('もちものなし')
-  const [electricMove, setElectricMove] = useState<'10まんボルト' | 'かみなり'>('10まんボルト')
-  
+  });
+  const [thunderItem, setThunderItem] = useState<ThunderItem>("もちものなし");
+  const [electricMove, setElectricMove] = useState<"10まんボルト" | "かみなり">(
+    "10まんボルト",
+  );
+
   // メタグロスの状態管理
-  const [metagrossNature, setMetagrossNature] = useState<Nature>('いじっぱり')
-  const [metagrossIvs, setMetagrossIvs] = useState<IVs>(DEFAULT_IVS)
+  // 一般的なHDメタグロスを初期値とする
+  const [metagrossNature, setMetagrossNature] = useState<Nature>("いじっぱり");
+  const [metagrossIvs, setMetagrossIvs] = useState<IVs>(DEFAULT_IVS);
   const [metagrossEvs, setMetagrossEvs] = useState<EVs>({
+    ...DEFAULT_EVS,
     hp: 244,
     attack: 36,
     defense: 4,
     spAttack: 0,
     spDefense: 164,
     speed: 60,
-  })
+  });
 
-  // サンダーオブジェクトを生成
   const thunder: Thunder = {
-    species: 'サンダー',
+    species: "サンダー",
     level: 50,
     nature: thunderNature,
     ivs: thunderIvs,
     evs: thunderEvs,
     item: thunderItem,
     electricMove,
-    stats: calculateStats('サンダー', 50, thunderNature, thunderIvs, thunderEvs),
-  }
-  
-  // メタグロスオブジェクトを生成
+    stats: calculateStats(
+      "サンダー",
+      50,
+      thunderNature,
+      thunderIvs,
+      thunderEvs,
+    ),
+  };
+
   const metagross: Metagross = {
-    species: 'メタグロス',
+    species: "メタグロス",
     level: 50,
     nature: metagrossNature,
     ivs: metagrossIvs,
     evs: metagrossEvs,
-    item: 'こだわりハチマキ', // デフォルト値
-    stats: calculateStats('メタグロス', 50, metagrossNature, metagrossIvs, metagrossEvs),
-  }
+    item: "もちものなし", // デフォルト値として仮セット
+    stats: calculateStats(
+      "メタグロス",
+      50,
+      metagrossNature,
+      metagrossIvs,
+      metagrossEvs,
+    ),
+  };
 
   const handleCalculate = () => {
-    setIsCalculating(true)
-    setWinRates(null)
-    setCustomWinRates(null)
+    setIsCalculating(true);
+    setWinRates(null);
+    setCustomWinRates(null);
 
     // 非同期で計算を実行
     setTimeout(() => {
-      const results = calculateWinRatesAgainstAllPresets(thunder)
-      setWinRates(results)
-      
-      const customRates = calculateWinRateAgainstCustom(thunder, metagross)
-      setCustomWinRates(customRates)
-      
-      setIsCalculating(false)
-    }, 100)
-  }
-  
+      const results = calculateWinRatesAgainstAllPresets(thunder);
+      setWinRates(results);
+
+      const customRates = calculateWinRateAgainstCustom(thunder, metagross);
+      setCustomWinRates(customRates);
+
+      setIsCalculating(false);
+    }, 100);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -82,9 +120,6 @@ const App = () => {
           <h1 className="text-2xl font-bold text-gray-900">
             AIstoic - サンダー対メタグロス特化計算機
           </h1>
-          <p className="text-sm text-gray-600 mt-1">
-            第三世代対戦環境における1対1勝率計算ツール
-          </p>
         </div>
       </header>
 
@@ -112,29 +147,26 @@ const App = () => {
               evs={metagrossEvs}
               onEvsChange={setMetagrossEvs}
             />
-            <DamageCalculation 
-              thunder={thunder} 
-              metagross={metagross}
-            />
+            <DamageCalculation thunder={thunder} metagross={metagross} />
           </div>
         </div>
 
         {/* 中央: 計算ボタン */}
         <div className="flex justify-center">
-          <Button 
-            onClick={handleCalculate} 
+          <Button
+            onClick={handleCalculate}
             disabled={isCalculating}
             size="lg"
             className="w-full max-w-md"
           >
-            {isCalculating ? '計算中...' : '勝率を計算する'}
+            {isCalculating ? "計算中..." : "勝率を計算する"}
           </Button>
         </div>
 
         {/* 下部: 勝率表 */}
         <div>
-          <WinRateTable 
-            winRates={winRates} 
+          <WinRateTable
+            winRates={winRates}
             customWinRates={customWinRates}
             isCalculating={isCalculating}
           />
@@ -146,12 +178,14 @@ const App = () => {
 
       <footer className="border-t bg-white mt-16">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-gray-600">
-          <p>計算式は第三世代（ルビー・サファイア・エメラルド・FRLG）の仕様に準拠</p>
-          <p className="mt-1">モンテカルロ法（10,000回試行）による確率計算</p>
+          <p>
+            連絡先→@ptrst102
+            {/* todo: https://x.com/ptrst102にリンクを張る */}
+          </p>
         </div>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

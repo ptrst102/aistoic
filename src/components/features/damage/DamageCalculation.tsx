@@ -1,48 +1,83 @@
-import type { Thunder, Metagross } from '@/types'
-import { calculateDamage, calculateStats } from '@/utils'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { DEFAULT_EVS, DEFAULT_IVS } from '@/constants'
+import type { Thunder, Metagross } from "@/types";
+import { calculateDamage, calculateStats } from "@/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { DEFAULT_EVS, DEFAULT_IVS } from "@/constants";
 
 interface DamageCalculationProps {
-  thunder: Thunder
-  metagross: Metagross
+  thunder: Thunder;
+  metagross: Metagross;
 }
 
-export const DamageCalculation = ({ thunder, metagross }: DamageCalculationProps) => {
+export const DamageCalculation = ({
+  thunder,
+  metagross,
+}: DamageCalculationProps) => {
   const calculateDamages = () => {
-
-    // ダメージ計算（もちものはこだわりハチマキ固定で計算）
-    const metagrossWithItem: Metagross = {
-      ...metagross,
-      item: 'こだわりハチマキ',
-    }
-
     // 10万ボルトのダメージ計算
-    const tboltMin = calculateDamage(thunder, metagrossWithItem, 95, 'special', 'electric', false, 0.85)
-    const tboltMax = calculateDamage(thunder, metagrossWithItem, 95, 'special', 'electric', false, 1.0)
+    const tboltMin = calculateDamage(
+      thunder,
+      metagross,
+      95,
+      "special",
+      "electric",
+      false,
+      0.85,
+    );
+    const tboltMax = calculateDamage(
+      thunder,
+      metagross,
+      95,
+      "special",
+      "electric",
+      false,
+      1.0,
+    );
 
     // かみなりのダメージ計算
-    const thunderMin = calculateDamage(thunder, metagrossWithItem, 120, 'special', 'electric', false, 0.85)
-    const thunderMax = calculateDamage(thunder, metagrossWithItem, 120, 'special', 'electric', false, 1.0)
+    const thunderMin = calculateDamage(
+      thunder,
+      metagross,
+      120,
+      "special",
+      "electric",
+      false,
+      0.85,
+    );
+    const thunderMax = calculateDamage(
+      thunder,
+      metagross,
+      120,
+      "special",
+      "electric",
+      false,
+      1.0,
+    );
 
     return {
       tbolt: { min: tboltMin, max: tboltMax },
       thunder: { min: thunderMin, max: thunderMax },
       hp: metagross.stats?.hp || 155,
-    }
-  }
+    };
+  };
 
-  const damageInfo = calculateDamages()
+  const damageInfo = calculateDamages();
 
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle>ダメージ計算</CardTitle>
         <CardDescription>
-          サンダー → 調整メタグロスへのダメージ
+          入力されているサンダー → メタグロスへのダメージ
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* todo:サンダーのとくこう、メタグロスのHPととくぼうの実数値をいいかんじに表示する */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">10まんボルト:</span>
@@ -71,5 +106,5 @@ export const DamageCalculation = ({ thunder, metagross }: DamageCalculationProps
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};

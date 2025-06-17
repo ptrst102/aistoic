@@ -1,5 +1,5 @@
-import { BASE_STATS, NATURE_MODIFIERS } from '@/constants'
-import type { IVs, Nature, Species } from '@/types'
+import { BASE_STATS, NATURE_MODIFIERS } from "@/constants";
+import type { IVs, Nature, Species } from "@/types";
 
 /**
  * 実数値から必要な努力値を逆算する
@@ -17,78 +17,97 @@ export const calculateEvFromStat = (
   nature: Nature,
   iv: number,
   stat: keyof IVs,
-  targetValue: number
+  targetValue: number,
 ): number | null => {
-  const baseStat = BASE_STATS[species][stat]
-  const natureModifier = NATURE_MODIFIERS[nature]
-  
-  if (stat === 'hp') {
+  const baseStat = BASE_STATS[species][stat];
+  const natureModifier = NATURE_MODIFIERS[nature];
+
+  if (stat === "hp") {
     // HP計算式の逆算
     // targetValue = floor((baseStat * 2 + iv + floor(ev / 4)) * level / 100) + 10 + level
-    const evPart = ((targetValue - 10 - level) * 100 / level - baseStat * 2 - iv) * 4
-    const ev = Math.ceil(evPart)
-    
+    const evPart =
+      (((targetValue - 10 - level) * 100) / level - baseStat * 2 - iv) * 4;
+    const ev = Math.ceil(evPart);
+
     // 努力値は0-252の範囲内である必要がある
-    if (ev < 0 || ev > 252) return null
-    
+    if (ev < 0 || ev > 252) return null;
+
     // 計算結果を検証（実際にその努力値で目標値になるか）
     const actualValue = Math.floor(
-      Math.floor((baseStat * 2 + iv + Math.floor(ev / 4)) * level / 100) + 10 + level
-    )
-    
+      Math.floor(((baseStat * 2 + iv + Math.floor(ev / 4)) * level) / 100) +
+        10 +
+        level,
+    );
+
     // 目標値に到達できない場合は、最も近い努力値を探す
     if (actualValue !== targetValue) {
       const testEvs = Array.from(
-        { length: Math.floor((Math.min(252, ev + 8) - Math.max(0, ev - 8)) / 4) + 1 },
-        (_, i) => Math.max(0, ev - 8) + i * 4
-      )
-      
-      const matchingEv = testEvs.find(testEv => {
+        {
+          length:
+            Math.floor((Math.min(252, ev + 8) - Math.max(0, ev - 8)) / 4) + 1,
+        },
+        (_, i) => Math.max(0, ev - 8) + i * 4,
+      );
+
+      const matchingEv = testEvs.find((testEv) => {
         const testValue = Math.floor(
-          Math.floor((baseStat * 2 + iv + Math.floor(testEv / 4)) * level / 100) + 10 + level
-        )
-        return testValue === targetValue
-      })
-      
-      return matchingEv ?? null
+          Math.floor(
+            ((baseStat * 2 + iv + Math.floor(testEv / 4)) * level) / 100,
+          ) +
+            10 +
+            level,
+        );
+        return testValue === targetValue;
+      });
+
+      return matchingEv ?? null;
     }
-    
-    return ev
+
+    return ev;
   }
-  
+
   // その他のステータス計算式の逆算
-    const natureMod = natureModifier.up === stat ? 1.1 : natureModifier.down === stat ? 0.9 : 1.0
-    
-    // targetValue = floor((floor((baseStat * 2 + iv + floor(ev / 4)) * level / 100) + 5) * natureMod)
-    const beforeNature = targetValue / natureMod
-    const evPart = ((beforeNature - 5) * 100 / level - baseStat * 2 - iv) * 4
-    const ev = Math.ceil(evPart)
-    
-    if (ev < 0 || ev > 252) return null
-    
-    // 計算結果を検証
-    const actualValue = Math.floor(
-      (Math.floor((baseStat * 2 + iv + Math.floor(ev / 4)) * level / 100) + 5) * natureMod
-    )
-    
-    if (actualValue !== targetValue) {
-      const testEvs = Array.from(
-        { length: Math.floor((Math.min(252, ev + 8) - Math.max(0, ev - 8)) / 4) + 1 },
-        (_, i) => Math.max(0, ev - 8) + i * 4
-      )
-      
-      const matchingEv = testEvs.find(testEv => {
-        const testValue = Math.floor(
-          (Math.floor((baseStat * 2 + iv + Math.floor(testEv / 4)) * level / 100) + 5) * natureMod
-        )
-        return testValue === targetValue
-      })
-      
-      return matchingEv ?? null
-    }
-    
-    return ev
-}
+  const natureMod =
+    natureModifier.up === stat ? 1.1 : natureModifier.down === stat ? 0.9 : 1.0;
+
+  // targetValue = floor((floor((baseStat * 2 + iv + floor(ev / 4)) * level / 100) + 5) * natureMod)
+  const beforeNature = targetValue / natureMod;
+  const evPart = (((beforeNature - 5) * 100) / level - baseStat * 2 - iv) * 4;
+  const ev = Math.ceil(evPart);
+
+  if (ev < 0 || ev > 252) return null;
+
+  // 計算結果を検証
+  const actualValue = Math.floor(
+    (Math.floor(((baseStat * 2 + iv + Math.floor(ev / 4)) * level) / 100) + 5) *
+      natureMod,
+  );
+
+  if (actualValue !== targetValue) {
+    const testEvs = Array.from(
+      {
+        length:
+          Math.floor((Math.min(252, ev + 8) - Math.max(0, ev - 8)) / 4) + 1,
+      },
+      (_, i) => Math.max(0, ev - 8) + i * 4,
+    );
+
+    const matchingEv = testEvs.find((testEv) => {
+      const testValue = Math.floor(
+        (Math.floor(
+          ((baseStat * 2 + iv + Math.floor(testEv / 4)) * level) / 100,
+        ) +
+          5) *
+          natureMod,
+      );
+      return testValue === targetValue;
+    });
+
+    return matchingEv ?? null;
+  }
+
+  return ev;
+};
 
 /**
  * 指定されたステータスの最小・最大実数値を計算
@@ -98,27 +117,28 @@ export const getStatRange = (
   level: number,
   nature: Nature,
   iv: number,
-  stat: keyof IVs
+  stat: keyof IVs,
 ): { min: number; max: number } => {
-  const baseStat = BASE_STATS[species][stat]
-  const natureModifier = NATURE_MODIFIERS[nature]
-  
-  if (stat === 'hp') {
+  const baseStat = BASE_STATS[species][stat];
+  const natureModifier = NATURE_MODIFIERS[nature];
+
+  if (stat === "hp") {
     const min = Math.floor(
-      Math.floor((baseStat * 2 + iv + 0) * level / 100) + 10 + level
-    )
+      Math.floor(((baseStat * 2 + iv + 0) * level) / 100) + 10 + level,
+    );
     const max = Math.floor(
-      Math.floor((baseStat * 2 + iv + 63) * level / 100) + 10 + level // 252/4 = 63
-    )
-    return { min, max }
+      Math.floor(((baseStat * 2 + iv + 63) * level) / 100) + 10 + level, // 252/4 = 63
+    );
+    return { min, max };
   }
-  
-  const natureMod = natureModifier.up === stat ? 1.1 : natureModifier.down === stat ? 0.9 : 1.0
-    const min = Math.floor(
-      (Math.floor((baseStat * 2 + iv + 0) * level / 100) + 5) * natureMod
-    )
-    const max = Math.floor(
-      (Math.floor((baseStat * 2 + iv + 63) * level / 100) + 5) * natureMod
-    )
-    return { min, max }
-}
+
+  const natureMod =
+    natureModifier.up === stat ? 1.1 : natureModifier.down === stat ? 0.9 : 1.0;
+  const min = Math.floor(
+    (Math.floor(((baseStat * 2 + iv + 0) * level) / 100) + 5) * natureMod,
+  );
+  const max = Math.floor(
+    (Math.floor(((baseStat * 2 + iv + 63) * level) / 100) + 5) * natureMod,
+  );
+  return { min, max };
+};
