@@ -1,11 +1,7 @@
 import type { Thunder, Metagross } from "@/types";
 import type { BattleState, PokemonBattleState } from "./battleState";
 import { determineTurnOrder } from "./turnOrder";
-import {
-  checkFlinch,
-  updateSleepTurns,
-  applyStatusCondition,
-} from "./statusEffects";
+import { checkFlinch, applyStatusCondition } from "./statusEffects";
 import {
   applyPinchBerryEffect,
   applySitrusBerryImmediate,
@@ -42,7 +38,6 @@ const initializeBattleState = (
       currentHP: thunder.stats.hp,
       maxHP: thunder.stats.hp,
       status: "none",
-      sleepTurns: 0,
       hasUsedLumBerry: false,
       hasUsedSitrusBerry: false,
       hasUsedPinchBerry: false,
@@ -58,7 +53,6 @@ const initializeBattleState = (
       currentHP: metagross.stats.hp,
       maxHP: metagross.stats.hp,
       status: "none",
-      sleepTurns: 0,
       hasUsedLumBerry: false,
       hasUsedSitrusBerry: false,
       hasUsedPinchBerry: false,
@@ -109,12 +103,7 @@ const processTurnStart = (
     );
   }
 
-  // ねむりターンの更新
-  return {
-    ...updatedState,
-    thunder: updateSleepTurns(updatedState.thunder),
-    metagross: updateSleepTurns(updatedState.metagross),
-  };
+  return updatedState;
 };
 
 /**

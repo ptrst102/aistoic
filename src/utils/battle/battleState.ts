@@ -1,12 +1,11 @@
 // 状態異常の型定義
-export type StatusCondition = "none" | "paralysis" | "sleep";
+export type StatusCondition = "none" | "paralysis";
 
 // ポケモンの戦闘状態
 export interface PokemonBattleState {
   currentHP: number;
   maxHP: number;
   status: StatusCondition;
-  sleepTurns: number;
   hasUsedLumBerry: boolean;
   hasUsedSitrusBerry: boolean;
   hasUsedPinchBerry: boolean;

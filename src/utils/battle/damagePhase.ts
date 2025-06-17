@@ -44,11 +44,6 @@ export const executeThunderTurn = (
     return { damage: 0, causedParalysis: false };
   }
 
-  // ねむりチェック
-  if (state.thunder.status === "sleep") {
-    return { damage: 0, causedParalysis: false };
-  }
-
   // まひによる行動不能チェック
   if (state.thunder.status === "paralysis" && isParalyzedImmobile()) {
     return { damage: 0, causedParalysis: false };
@@ -114,11 +109,6 @@ export const executeMetagrossTurn = (
 
   // ひるみチェック
   if (isFlinched) {
-    return { damage: 0, causedFlinch: false };
-  }
-
-  // ねむりチェック（メタグロスはねむらないが、将来の拡張のため）
-  if (state.metagross.status === "sleep") {
     return { damage: 0, causedFlinch: false };
   }
 

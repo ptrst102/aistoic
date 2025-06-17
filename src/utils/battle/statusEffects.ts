@@ -25,38 +25,14 @@ export const isParalyzedImmobile = (): boolean => {
 };
 
 /**
- * ねむりターンの減少処理
- * @param pokemonState ポケモンの戦闘状態
- * @returns 更新後の戦闘状態
- */
-export const updateSleepTurns = (
-  pokemonState: PokemonBattleState,
-): PokemonBattleState => {
-  if (pokemonState.status === "sleep" && pokemonState.sleepTurns > 0) {
-    const newSleepTurns = pokemonState.sleepTurns - 1;
-    const newStatus = newSleepTurns === 0 ? "none" : "sleep";
-
-    return {
-      ...pokemonState,
-      sleepTurns: newSleepTurns,
-      status: newStatus,
-    };
-  }
-
-  return pokemonState;
-};
-
-/**
  * 状態異常の付与
  * @param pokemonState ポケモンの戦闘状態
  * @param status 付与する状態異常
- * @param sleepTurns ねむりターン数（ねむりの場合のみ）
  * @returns 更新後の戦闘状態
  */
 export const applyStatusCondition = (
   pokemonState: PokemonBattleState,
-  status: "paralysis" | "sleep",
-  sleepTurns?: number,
+  status: "paralysis",
 ): PokemonBattleState => {
   // 既に状態異常の場合は付与しない
   if (pokemonState.status !== "none") {
@@ -66,7 +42,5 @@ export const applyStatusCondition = (
   return {
     ...pokemonState,
     status,
-    sleepTurns:
-      status === "sleep" && sleepTurns ? sleepTurns : pokemonState.sleepTurns,
   };
 };
