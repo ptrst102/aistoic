@@ -1,13 +1,6 @@
 import type { Thunder, Metagross } from "@/types";
-import { calculateDamage, calculateStats } from "@/utils";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { DEFAULT_EVS, DEFAULT_IVS } from "@/constants";
+import { calculateDamage } from "@/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DamageCalculationProps {
   thunder: Thunder;
@@ -71,13 +64,13 @@ export const DamageCalculation = ({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>ダメージ計算</CardTitle>
-        <CardDescription>
-          入力されているサンダー → メタグロスへのダメージ
-        </CardDescription>
+        <CardTitle>
+          {thunder.stats?.spAttack || 177}サンダー →{" "}
+          {metagross.stats?.hp || 155}-{metagross.stats?.spDefense || 110}
+          メタグロスへのダメージ計算
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        {/* todo:サンダーのとくこう、メタグロスのHPととくぼうの実数値をいいかんじに表示する */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">10まんボルト:</span>

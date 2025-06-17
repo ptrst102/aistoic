@@ -46,7 +46,7 @@ export const HelpSection = () => {
                 <br />
                 モンテカルロシミュレーション（10000回試行）によっておおよその勝率を算出します。計算のたびに結果がわずかに変動するため、参考値として捉えてください。
                 <br />
-                PCでの閲覧を推奨します
+                PCでの閲覧を推奨します。
               </p>
             </section>
 
@@ -100,8 +100,24 @@ export const HelpSection = () => {
               <p className="text-sm text-gray-600 leading-relaxed">
                 このツールは、その90%をAIによるコーディングで実装しています。
                 <br />
-                stoic氏のブログ記事で行われていたメタグロスとサンダーの勝率計算を、AIの力でラクに行いたい、という意図でこのツールは命名されました。
-                {/* todo: https://x.com/stoic4486　と　https://stoic4486.hatenablog.com/entry/2025/06/15/100520にリンクを張る */}
+                <a
+                  href="https://x.com/stoic4486"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  stoic氏
+                </a>
+                の
+                <a
+                  href="https://stoic4486.hatenablog.com/entry/2025/06/15/100520"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  ブログ記事
+                </a>
+                で行われていたメタグロスとサンダーの勝率計算を、AIの力でラクに行いたい、という意図でこのツールは命名されました。
               </p>
             </section>
           </CardContent>

@@ -178,8 +178,15 @@ const App = () => {
       <footer className="border-t bg-white mt-16">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-gray-600">
           <p>
-            連絡先→@ptrst102
-            {/* todo: https://x.com/ptrst102にリンクを張る */}
+            連絡先→
+            <a
+              href="https://x.com/ptrst102"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              @ptrst102
+            </a>
           </p>
         </div>
       </footer>
